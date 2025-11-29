@@ -5,21 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Детализация доходов</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
     <style>
-        /* (Сокращенные стили) */
+        /* Общие стили (аналогичные analytics_home.html) */
         body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: #f0f0f0;
             display: flex;
             justify-content: center;
+            padding-bottom: 80px;
         }
 
         :root {
             --alfa-red: #EE3124;
-            --alfa-green: #38A34A;
+            --alfa-green: #387B44; /* Новый цвет для доходов */
+            --green-c1-dark: #2A5A35;
+            --green-c2-medium: #387B44;
+            --green-c3-light: #5BAA69;
             --text-color: #333;
+            --bg-light-gray: #F7F7F7;
             --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
@@ -30,116 +36,217 @@
             min-height: 100vh;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             position: relative;
-            padding-bottom: 80px;
         }
-        /* (Стили заголовка и навигации такие же, как в expenses.html) */
 
-        .summary-card {
-            background-color: var(--alfa-green);
+        /* HEADER */
+        .header-nav {
+            padding: 0 20px;
+        }
+
+        .back-settings {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0 15px 0;
+            font-size: 18px;
+            color: var(--text-color);
+        }
+        .settings-icon {
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .back-arrow {
+            cursor: pointer;
+        }
+        
+        /* TABS */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+        .tab {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 18px;
+            background-color: #f0f0f0;
+            color: var(--text-color);
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .tab.active {
+            background-color: #000;
             color: white;
-            padding: 25px 20px;
-            border-radius: 20px;
-            text-align: center;
-            margin-bottom: 20px;
+        }
+        .current-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0 0 15px 0;
         }
 
-        .member-card {
+
+        /* CHART CARD */
+        .content {
+            padding: 0 20px;
+        }
+        .chart-card {
             background-color: white;
             border-radius: 20px;
             box-shadow: var(--card-shadow);
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             padding: 20px;
-            border: 1px solid #eee;
+            text-align: center;
+        }
+        .chart-canvas-wrapper {
+            max-width: 250px;
+            margin: 0 auto 20px auto;
+        }
+        .income-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .total-income {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--alfa-green); 
+            margin-bottom: 20px;
         }
 
-        .member-header {
+        /* LEGEND */
+        .legend {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+        }
+        .legend-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+            font-size: 16px;
+            line-height: 1.2;
+            font-weight: 500;
+            cursor: pointer;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
         }
-        .member-header h3 {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 0;
+        .legend-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .legend-name {
             display: flex;
             align-items: center;
+            font-weight: 600;
         }
-        .member-header h3 i {
-            color: var(--alfa-green); /* Green for income */
+        .legend-item span {
+             font-weight: 500;
+        }
+        
+        .color-swatch {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
             margin-right: 10px;
-            font-size: 20px;
         }
-        .member-amount {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--alfa-green);
+
+        /* Цвета для легенды (Примерно 3 категории) */
+        .c1 { background-color: var(--green-c1-dark); }
+        .c2 { background-color: var(--green-c2-medium); }
+        .c3 { background-color: var(--green-c3-light); }
+
+        /* BOTTOM NAV */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 390px;
+            height: 70px;
+            background-color: white;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 5px; 
+            font-size: 11px;
+            color: #888;
         }
-        .category-item i {
-            font-size: 8px;
-            margin-right: 8px;
-            color: var(--alfa-green); /* Green dots for income categories */
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+        }
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        .nav-item:nth-child(4) i, .nav-item:nth-child(4) span { 
+            color: var(--alfa-red);
         }
     </style>
 </head>
 <body>
 
 <div class="app-screen">
-    
-    <div class="top-bar">
-        <span>9:41</span>
-        <div class="status-icons">
-            <i class="fas fa-signal"></i>
-            <i class="fas fa-wifi"></i>
-            <i class="fas fa-battery-three-quarters"></i>
-        </div>
-    </div>
-
-    <header class="header-nav" style="padding: 0 20px; background-color: white; padding-bottom: 20px;">
-        <div class="back-title">
-            <i class="fas fa-chevron-left back-arrow" id="navToAnalyticsHome"></i>
-            <h1 class="header-title">Октябрь</h1>
-        </div>
-        <h2 class="header-subtitle">Детализация доходов</h2>
-        <p class="header-description">
-            Подробная разбивка поступлений по каждому члену семьи.
-        </p>
-
-        <div class="tabs" style="display: flex; gap: 8px; margin-top: 15px; overflow-x: auto; padding-bottom: 10px;">
-            <button class="tab active" style="padding: 6px 12px; border: none; border-radius: 18px; background-color: #000; color: white;">Все</button>
-            <button class="tab" style="padding: 6px 12px; border: none; border-radius: 18px; background-color: #f0f0f0; color: #333;">Зарплата</button>
-            <button class="tab" style="padding: 6px 12px; border: none; border-radius: 18px; background-color: #f0f0f0; color: #333;">Кэшбэк</button>
-        </div>
-    </header>
-
-    <main class="content" id="memberCardsContainer" style="padding: 20px; padding-top: 0;">
-
-        <div class="summary-card">
-            <p>Общий доход семьи за Октябрь:</p>
-            <h2>150 000 ₽</h2>
+    <div class="header-nav">
+        <div class="back-settings">
+            <i class="fas fa-chevron-left back-arrow" id="navToAnalytics"></i>
+            <i class="fas fa-exchange-alt settings-icon" id="navToSettings"></i>
         </div>
         
-        </main>
+        <div class="tabs">
+            <button class="tab" id="expensesTab">Расходы</button>
+            <button class="tab active" id="incomeTab">Доходы</button>
+            <button class="tab" id="allAnalyticsTab">Вся аналитика</button>
+        </div>
+        <h1 class="current-title">Доходы за Октябрь</h1>
+    </div>
 
-    <nav class="bottom-nav" style="position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); max-width: 390px; width: 100%; height: 70px; background-color: white; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05); display: flex; justify-content: space-around; align-items: center; padding-bottom: 5px; font-size: 11px; color: #888; z-index: 20;">
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
-            <i class="fas fa-home" style="font-size: 22px; margin-bottom: 4px;"></i>
+    <main class="content">
+
+        <div class="chart-card">
+            <div class="income-title">Общий доход</div>
+            <div class="total-income">250 000 ₽</div>
+            
+            <div class="chart-canvas-wrapper">
+                <canvas id="incomeChart"></canvas>
+            </div>
+            
+            <ul class="legend" id="incomeLegend">
+                </ul>
+        </div>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <div class="nav-item" id="navToMainBottom">
+            <i class="fas fa-home"></i>
             <span>Главный</span>
         </div>
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
-            <i class="fas fa-credit-card" style="font-size: 22px; margin-bottom: 4px;"></i>
+        <div class="nav-item">
+            <i class="fas fa-credit-card"></i>
             <span>Платежи</span>
         </div>
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
-            <i class="fas fa-heart" style="font-size: 22px; margin-bottom: 4px;"></i>
+        <div class="nav-item">
+            <i class="fas fa-heart"></i>
             <span>Выгода</span>
         </div>
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500; color: var(--alfa-red);">
-            <i class="fas fa-history" style="font-size: 22px; margin-bottom: 4px;"></i>
+        <div class="nav-item active-nav">
+            <i class="fas fa-history"></i>
             <span>История</span>
         </div>
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
-            <i class="fas fa-comment-dots" style="font-size: 22px; margin-bottom: 4px;"></i>
+        <div class="nav-item">
+            <i class="fas fa-comment-dots"></i>
             <span>Чаты</span>
         </div>
     </nav>
@@ -147,107 +254,108 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const memberCardsContainer = document.getElementById('memberCardsContainer');
 
-        // --- LOCAL STORAGE MANAGEMENT ---
-        const DEFAULT_MEMBERS_CONFIG = [
-            { id: 'father', name: 'Папа', icon: 'male', role: 'Основной пользователь', type: 'main', editable: true, removable: false },
-            { id: 'mother', name: 'Мама', icon: 'female', role: 'Пользователь', type: 'user', editable: true, removable: false },
-            { id: 'child', name: 'Ребенок', icon: 'child', role: 'Зависимый профиль', type: 'dependent', editable: true, removable: true }
-        ];
-
-        function getFamilyMembers() {
-            const membersJson = localStorage.getItem('family_members');
-            if (membersJson) {
-                return JSON.parse(membersJson);
-            }
-            localStorage.setItem('family_members', JSON.stringify(DEFAULT_MEMBERS_CONFIG));
-            return DEFAULT_MEMBERS_CONFIG;
-        }
-
-        // --- ШАБЛОНЫ КАРТОЧЕК ДОХОДОВ (Условные данные) ---
-        const INCOME_TEMPLATES = {
-            'child': {
-                amount: '5 000 ₽',
-                categories: [
-                    { name: 'Подарок', amount: '3 000 ₽' },
-                    { name: 'Стипендия', amount: '2 000 ₽' }
-                ]
-            },
-            'mother': {
-                amount: '55 000 ₽',
-                categories: [
-                    { name: 'Зарплата', amount: '44 000 ₽' },
-                    { name: 'Кэшбэк', amount: '5 500 ₽' },
-                    { name: 'Прочее', amount: '5 500 ₽' }
-                ]
-            },
-            'father': {
-                amount: '90 000 ₽',
-                categories: [
-                    { name: 'Зарплата', amount: '80 000 ₽' },
-                    { name: 'Проценты по вкладу', amount: '10 000 ₽' }
-                ]
-            },
-            'dynamic': {
-                amount: '0 ₽',
-                categories: [
-                    { name: 'Дополнительный доход', amount: '0 ₽' }
-                ]
-            }
+        // --- Функция: Загрузка имен из localStorage (КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ) ---
+        const getMemberName = (id, defaultName) => {
+            if (id === 'child') return localStorage.getItem(`member_name_${id}`) || 'Ребенок';
+            if (id === 'mother') return localStorage.getItem(`member_name_${id}`) || 'Мама';
+            if (id === 'father') return localStorage.getItem(`member_name_${id}`) || 'Папа';
+            return defaultName;
         };
 
-        // --- ДИНАМИЧЕСКИЙ РЕНДЕРИНГ ---
-        function generateCategoryListHTML(categories) {
-            return categories.map(cat => `
-                <li class="category-item">
-                    <span><i class="fas fa-circle"></i> ${cat.name}</span>
-                    <span>${cat.amount}</span>
-                </li>
-            `).join('');
-        }
-
-        function renderMemberCards() {
-            const members = getFamilyMembers();
-            
-            // Удаляем все старые карточки
-            const existingCards = document.querySelectorAll('.member-card');
-            existingCards.forEach(card => card.remove());
-            
-            const summaryCard = document.querySelector('.summary-card');
-            let html = '';
-
-            members.forEach(member => {
-                const templateKey = member.type === 'dynamic' ? 'dynamic' : member.id;
-                const template = INCOME_TEMPLATES[templateKey] || INCOME_TEMPLATES['dynamic'];
-                
-                const iconClass = member.icon ? `fa-${member.icon}` : 'fa-user';
-
-                html += `
-                    <div class="member-card" id="member_${member.id}">
-                        <div class="member-header">
-                            <h3><i class="fas ${iconClass}"></i> <span>${member.name}</span></h3>
-                            <span class="member-amount">${template.amount}</span>
-                        </div>
-                        <ul class="category-list">
-                            ${generateCategoryListHTML(template.categories)}
-                        </ul>
-                    </div>
-                `;
-            });
-            
-            if (summaryCard) {
-                summaryCard.insertAdjacentHTML('afterend', html);
-            } else {
-                memberCardsContainer.innerHTML += html;
-            }
-        }
+        const childName = getMemberName('child', 'Ребенок');
+        const motherName = getMemberName('mother', 'Мама');
+        const fatherName = getMemberName('father', 'Папа');
         
-        // --- ИНИЦИАЛИЗАЦИЯ И НАВИГАЦИЯ ---
-        renderMemberCards();
+        // Данные для графика доходов (Пример)
+        const incomeData = [
+            { id: 'father', name: fatherName, amount: 150000, percentage: 60, color: '#2A5A35' }, // Папа (ЗП)
+            { id: 'mother', name: motherName, amount: 80000, percentage: 32, color: '#387B44' }, // Мама (Доп. доход)
+            { id: 'child', name: childName, amount: 20000, percentage: 8, color: '#5BAA69' }, // Ребенок (Подарки)
+        ];
+        
+        // --- ЛОГИКА ГРАФИКА ---
+        const ctx = document.getElementById('incomeChart').getContext('2d');
+        const incomeChart = new Chart(ctx, {
+            type: 'doughnut', 
+            data: {
+                labels: incomeData.map(d => d.name),
+                datasets: [{
+                    data: incomeData.map(d => d.percentage),
+                    backgroundColor: incomeData.map(d => d.color),
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                aspectRatio: 1, 
+                cutout: '70%', 
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: true }
+                },
+                animation: { duration: 1000 },
+                onClick: (e, elements) => {
+                    // При клике на сегмент, можно перейти на детализацию доходов (если есть)
+                    if (elements.length > 0) {
+                       alert(`Детализация доходов для: ${incomeData[elements[0].index].name}`);
+                    }
+                }
+            }
+        });
+        
+        // --- Обновление HTML легенды ---
+        const updateHTMLLegend = () => {
+            const legendContainer = document.getElementById('incomeLegend');
+            legendContainer.innerHTML = ''; // Очистка
+            
+            incomeData.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = 'legend-item';
+                li.setAttribute('data-segment-id', item.id);
+                
+                // Используем класс для цвета c1, c2, c3
+                const colorClass = `c${index + 1}`; 
 
-        document.getElementById('navToAnalyticsHome').addEventListener('click', () => {
+                li.innerHTML = `
+                    <div class="legend-name">
+                        <span class="color-swatch ${colorClass}"></span>${item.name}
+                    </div>
+                    <span>
+                        <b>${item.amount.toLocaleString('ru-RU')} ₽</b> (${item.percentage}%)
+                    </span>
+                `;
+                legendContainer.appendChild(li);
+            });
+        };
+        
+        updateHTMLLegend();
+
+
+        // --- ЛОГИКА ПЕРЕХОДОВ ---
+        
+        // 1. Переход обратно на Вся аналитика
+        document.getElementById('navToAnalytics').addEventListener('click', () => {
             window.location.href = 'analytics_home.html'; 
+        });
+        document.getElementById('allAnalyticsTab').addEventListener('click', () => {
+             window.location.href = 'analytics_home.html'; 
+        });
+
+        // 2. Переход на Расходы
+        document.getElementById('expensesTab').addEventListener('click', () => {
+             window.location.href = 'details_expenses.html'; 
+        });
+
+        // 3. Переход на Главный экран (Нижнее меню)
+        document.getElementById('navToMainBottom').addEventListener('click', () => {
+             window.location.href = 'main_bank_screen.html'; 
+        });
+        
+        // 4. Заглушка для иконки "Настройки/Сортировка"
+        document.getElementById('navToSettings').addEventListener('click', () => {
+            alert('Сортировка/Фильтрация не реализована.');
         });
     });
 </script>
