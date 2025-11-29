@@ -39,111 +39,153 @@
             display: flex;
             align-items: center;
             padding: 15px 0 20px 0;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
         }
 
         .back-arrow {
-            font-size: 22px;
+            font-size: 20px;
             margin-right: 15px;
             cursor: pointer;
-            color: #000;
         }
 
-        /* CONTENT */
         .content {
-            padding: 0 0 20px 0; /* Убираем горизонтальный padding, т.к. список его добавит */
+            padding: 0 20px 20px 20px;
         }
         
         .section-title {
-            font-size: 14px;
-            color: #999;
-            font-weight: 500;
-            padding: 15px 20px 10px 20px;
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 10px;
             text-transform: uppercase;
         }
 
-        /* MEMBER LIST */
-        .member-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .member-item {
+        /* MEMBER LIST ITEM (Стили как на скриншоте "Владик, Лера, Олег") */
+        .member-list-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 20px;
+            padding: 15px 0;
             border-bottom: 1px solid #eee;
             cursor: pointer;
         }
-        .member-item:last-of-type {
+        .member-list-item:last-of-type {
             border-bottom: none;
         }
-        
+
         .member-info {
             display: flex;
             align-items: center;
         }
-
-        .initials-circle {
-            width: 36px;
-            height: 36px;
+        
+        .member-initials {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
+            background-color: #EE3124; /* Альфа-цвет */
+            color: white;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: white;
-            font-size: 18px;
             font-weight: 600;
+            font-size: 18px;
             margin-right: 15px;
+            /* Добавляем разные цвета для разнообразия, как на скриншоте */
         }
-        /* Цвета из скриншота */
-        .initials-b { background-color: #8D99AE; } /* Серо-коричневый для В */
-        .initials-l { background-color: #EE3124; } /* Красный Альфа для Л */
-        .initials-o { background-color: #F7A855; } /* Оранжевый для О */
-        
+        .child-color { background-color: #B02727; } 
+        .mother-color { background-color: #EE3124; }
+        .father-color { background-color: #FF5722; }
+
         .member-name {
             font-size: 16px;
             font-weight: 500;
-            color: var(--text-color);
         }
 
         .rename-action {
             display: flex;
             align-items: center;
-            color: #999;
-            font-size: 14px;
-        }
-        .rename-action i {
-            margin-left: 8px;
-            font-size: 16px;
+            color: #888;
+            font-size: 15px;
         }
 
-        /* ADD BUTTON */
-        .button-wrapper {
-            padding: 20px;
-            background-color: white; /* Фон для кнопки */
+        .rename-action i {
+            margin-left: 10px;
+            font-size: 16px;
         }
+        
+        /* ADD BUTTON */
         .add-member-button {
             width: 100%;
-            background-color: var(--alfa-red);
+            background-color: #E24747; 
             color: white;
             border: none;
-            border-radius: 12px;
-            padding: 12px 20px;
+            border-radius: 15px;
+            padding: 15px 20px;
+            margin-top: 30px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 6px rgba(238, 49, 36, 0.3);
+            box-shadow: 0 4px 6px rgba(226, 71, 71, 0.3);
+            transition: background-color 0.2s;
         }
         .add-member-button i {
             margin-right: 10px;
             font-size: 20px;
+        }
+
+        /* МОДАЛЬНОЕ ОКНО ДЛЯ ПЕРЕИМЕНОВАНИЯ */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 300px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .modal-content h3 { margin-top: 0; font-size: 18px; }
+        .modal-content input {
+            width: 95%;
+            padding: 10px;
+            margin: 10px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .modal-buttons button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        #modalSave {
+            background-color: var(--alfa-red);
+            color: white;
+        }
+        #modalCancel {
+            background-color: #ddd;
+            color: var(--text-color);
         }
 
     </style>
@@ -162,24 +204,55 @@
 
         <div class="section-title">Члены семьи</div>
 
-        <ul class="member-list" id="memberList">
-            </ul>
-        
-        <div class="button-wrapper">
-            <button class="add-member-button" id="addMember">
-                <i class="fas fa-user-plus"></i> Добавить члена семьи
-            </button>
+        <div class="member-list">
+            <div class="member-list-item" data-member-id="child">
+                <div class="member-info">
+                    <div class="member-initials child-color" id="initials_child">Р</div>
+                    <span class="member-name" id="name_child">Ребенок</span>
+                </div>
+                <div class="rename-action">
+                    <span>Переименовать</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <div class="member-list-item" data-member-id="mother">
+                <div class="member-info">
+                    <div class="member-initials mother-color" id="initials_mother">М</div>
+                    <span class="member-name" id="name_mother">Мама</span>
+                </div>
+                <div class="rename-action">
+                    <span>Переименовать</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <div class="member-list-item" data-member-id="father">
+                <div class="member-info">
+                    <div class="member-initials father-color" id="initials_father">П</div>
+                    <span class="member-name" id="name_father">Папа</span>
+                </div>
+                <div class="rename-action">
+                    <span>Переименовать</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
         </div>
+        
+        <button class="add-member-button">
+            <i class="fas fa-user-plus"></i> Добавить члена семьи
+        </button>
 
     </main>
     
-    <div id="renameModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:100; justify-content:center; align-items:center;">
-        <div style="background:white; padding:20px; border-radius:15px; width:80%; text-align:center;">
-            <h3>Переименование</h3>
-            <p>Введите новое имя для <span id="currentMemberName"></span>:</p>
-            <input type="text" id="newNameInput" placeholder="Новое имя" style="width:90%; padding:10px; margin-bottom:15px; border: 1px solid #ccc; border-radius: 8px;">
-            <button id="saveRename" style="background:var(--alfa-red); color:white; padding:10px 15px; border:none; border-radius:8px; margin-right:10px;">Сохранить</button>
-            <button id="cancelRename" style="background:#ddd; color:#333; padding:10px 15px; border:none; border-radius:8px;">Отмена</button>
+    <div id="renameModal" class="modal">
+        <div class="modal-content">
+            <h3>Переименовать</h3>
+            <input type="text" id="newNameInput" placeholder="Введите новое имя">
+            <div class="modal-buttons">
+                <button id="modalCancel">Отмена</button>
+                <button id="modalSave">Сохранить</button>
+            </div>
         </div>
     </div>
 
@@ -187,113 +260,113 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const MEMBER_DATA = [
-            // Идентификаторы соответствуют членам семьи в analytics_home.html и details_income.html
-            { id: 'child', defaultName: 'Ребенок', initial: 'В', colorClass: 'initials-b' },
-            { id: 'mother', defaultName: 'Мама', initial: 'Л', colorClass: 'initials-l' },
-            { id: 'father', defaultName: 'Папа', initial: 'О', colorClass: 'initials-o' },
-        ];
-        
-        const memberListContainer = document.getElementById('memberList');
+        const memberItems = document.querySelectorAll('.member-list-item');
+        const navToAnalytics = document.getElementById('navToAnalytics');
         const renameModal = document.getElementById('renameModal');
         const newNameInput = document.getElementById('newNameInput');
-        const currentMemberNameSpan = document.getElementById('currentMemberName');
-        const saveRenameButton = document.getElementById('saveRename');
-        const cancelRenameButton = document.getElementById('cancelRename');
-
-        let activeMemberId = null;
-
-        // --- 1. Функция: Получение/Установка имени ---
-        const getMemberName = (id, defaultName) => {
-            return localStorage.getItem(`member_name_${id}`) || defaultName;
-        };
-
-        const setMemberName = (id, newName) => {
-            localStorage.setItem(`member_name_${id}`, newName);
-        };
+        const modalSave = document.getElementById('modalSave');
+        const modalCancel = document.getElementById('modalCancel');
         
-        // --- 2. Функция: Рендеринг списка ---
-        const renderMemberList = () => {
-            memberListContainer.innerHTML = '';
-            
-            MEMBER_DATA.forEach(member => {
-                const currentName = getMemberName(member.id, member.defaultName);
-                const firstLetter = currentName.charAt(0).toUpperCase();
+        let currentMemberId = null; 
+
+        // --- Функция: Загрузка имен из localStorage ---
+        const loadNames = () => {
+            memberItems.forEach(item => {
+                const memberId = item.getAttribute('data-member-id');
+                const defaultNameMap = {
+                    'child': 'Ребенок',
+                    'mother': 'Мама',
+                    'father': 'Папа'
+                };
+                const defaultInitialMap = {
+                    'child': 'Р',
+                    'mother': 'М',
+                    'father': 'П'
+                };
+
+                // Загружаем имя из localStorage или берем дефолтное
+                const savedName = localStorage.getItem(`member_name_${memberId}`) || defaultNameMap[memberId];
                 
-                const item = document.createElement('li');
-                item.className = 'member-item';
-                item.setAttribute('data-member-id', member.id);
-                item.setAttribute('data-member-name', currentName);
-                
-                item.innerHTML = `
-                    <div class="member-info">
-                        <div class="initials-circle ${member.colorClass}">${firstLetter}</div>
-                        <div class="member-name">${currentName}</div>
-                    </div>
-                    <div class="rename-action">
-                        Переименовать <i class="fas fa-chevron-right"></i>
-                    </div>
-                `;
-                
-                item.addEventListener('click', () => showRenameModal(member.id, currentName));
-                memberListContainer.appendChild(item);
+                // Обновляем имя и инициал на экране
+                const nameElement = document.getElementById(`name_${memberId}`);
+                const initialsElement = document.getElementById(`initials_${memberId}`);
+
+                if (nameElement) {
+                    nameElement.textContent = savedName;
+                }
+                if (initialsElement) {
+                    // Используем первую букву имени как инициал
+                    initialsElement.textContent = savedName.charAt(0).toUpperCase();
+                }
             });
         };
-        
-        // --- 3. ЛОГИКА МОДАЛЬНОГО ОКНА ---
-        const showRenameModal = (id, currentName) => {
-            activeMemberId = id;
-            currentMemberNameSpan.textContent = currentName;
-            newNameInput.value = currentName;
+
+        // --- Функция: Сохранение имени в localStorage ---
+        const saveName = () => {
+            if (!currentMemberId) return;
+
+            const newName = newNameInput.value.trim();
+            const defaultNameMap = {
+                'child': 'Ребенок',
+                'mother': 'Мама',
+                'father': 'Папа'
+            };
             
-            renameModal.style.display = 'flex';
-            newNameInput.focus();
-        };
-
-        const hideRenameModal = () => {
+            // Если поле пустое, сохраняем дефолтное имя
+            const nameToSave = newName || defaultNameMap[currentMemberId]; 
+            localStorage.setItem(`member_name_${currentMemberId}`, nameToSave);
+            
+            // Обновляем данные на экране и закрываем модалку
+            loadNames(); 
             renameModal.style.display = 'none';
-            activeMemberId = null;
         };
+
+
+        // --- ОБРАБОТЧИКИ СОБЫТИЙ ---
         
-        saveRenameButton.addEventListener('click', () => {
-            if (activeMemberId) {
-                const newName = newNameInput.value.trim();
-                // Используем "Мама", "Папа", "Ребенок" как запасные имена, если поле пустое
-                const defaultObject = MEMBER_DATA.find(m => m.id === activeMemberId);
-                const finalName = newName || defaultObject.defaultName; 
+        // Открытие модального окна при клике на элемент списка
+        memberItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                currentMemberId = item.getAttribute('data-member-id');
+                const currentName = document.getElementById(`name_${currentMemberId}`).textContent;
                 
-                setMemberName(activeMemberId, finalName);
-                renderMemberList(); // Перерисовываем список, чтобы увидеть изменения
-                hideRenameModal();
-                alert(`Имя успешно изменено на: ${finalName}. Изменения отобразятся на экране аналитики.`);
-            }
+                // Устанавливаем текущее имя в поле ввода
+                newNameInput.value = currentName; 
+                newNameInput.placeholder = currentName;
+                renameModal.style.display = 'block';
+                newNameInput.focus();
+            });
         });
 
-        cancelRenameButton.addEventListener('click', hideRenameModal);
-        
-        // Позволяет сохранить по Enter
-        newNameInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                saveRenameButton.click();
-            }
+        // Кнопка "Сохранить" в модальном окне
+        modalSave.addEventListener('click', saveName);
+
+        // Кнопка "Отмена" в модальном окне
+        modalCancel.addEventListener('click', () => {
+            renameModal.style.display = 'none';
         });
 
-
-        // --- 4. ЛОГИКА ПЕРЕХОДОВ ---
+        // Закрытие модального окна при клике вне него
+        window.addEventListener('click', (event) => {
+            if (event.target === renameModal) {
+                renameModal.style.display = 'none';
+            }
+        });
         
         // Переход обратно на экран аналитики
-        document.getElementById('navToAnalytics').addEventListener('click', () => {
+        navToAnalytics.addEventListener('click', () => {
+            // При возвращении, страница analytics_home.html сама загрузит обновленные имена
             window.location.href = 'analytics_home.html';
         });
         
         // Заглушка для кнопки "Добавить члена семьи"
-        document.getElementById('addMember').addEventListener('click', () => {
+        document.querySelector('.add-member-button').addEventListener('click', () => {
             alert('Функционал добавления нового члена семьи не реализован.');
         });
 
 
         // Инициализация
-        renderMemberList();
+        loadNames();
     });
 </script>
 </body>
