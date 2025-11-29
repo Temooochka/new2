@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Настройка семьи</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
     <style>
-        /* Общие стили */
+        /* Общие переменные и стили */
         body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -19,8 +18,7 @@
         :root {
             --alfa-red: #EE3124;
             --text-color: #333;
-            --light-gray: #f7f7f7;
-            --border-color: #ddd;
+            --bg-light-gray: #F7F7F7;
         }
 
         .app-screen {
@@ -32,15 +30,6 @@
             position: relative;
         }
 
-        /* TOP BAR */
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 25px 8px 20px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
         /* HEADER */
         .header-nav {
             padding: 0 20px;
@@ -49,80 +38,56 @@
         .back-title {
             display: flex;
             align-items: center;
-            padding: 15px 0 25px 0;
-            font-size: 18px;
-            color: var(--text-color);
-        }
-        .back-arrow {
-            cursor: pointer;
-            margin-right: 15px;
-            font-size: 20px;
-        }
-        .header-title {
+            padding: 15px 0 20px 0;
             font-size: 20px;
             font-weight: 600;
-            margin: 0;
+        }
+
+        .back-arrow {
+            font-size: 22px;
+            margin-right: 15px;
+            cursor: pointer;
+            color: #000;
         }
 
         /* CONTENT */
         .content {
-            padding: 0 0px; /* Отступы внутри блоков */
-        }
-
-        /* LISTS & ITEMS */
-        .settings-section {
-            background-color: white;
-            padding: 0 20px;
+            padding: 0 0 20px 0; /* Убираем горизонтальный padding, т.к. список его добавит */
         }
         
-        .section-header {
+        .section-title {
             font-size: 14px;
-            color: #666;
-            margin-bottom: 5px;
-            padding: 15px 0 5px 0;
+            color: #999;
             font-weight: 500;
-            border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px 10px 20px;
+            text-transform: uppercase;
         }
 
-        .setting-item {
+        /* MEMBER LIST */
+        .member-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .member-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--light-gray);
+            justify-content: space-between;
+            padding: 12px 20px;
+            border-bottom: 1px solid #eee;
             cursor: pointer;
         }
-
-        .setting-item:last-child {
-            border-bottom: none; 
-        }
-
-        .item-info {
-            display: flex;
-            align-items: center;
-            flex-grow: 1;
-        }
-
-        .item-info span {
-            font-size: 16px;
-            font-weight: 500;
-            margin-left: 15px;
+        .member-item:last-of-type {
+            border-bottom: none;
         }
         
-        .item-details {
-            color: #888;
-            font-size: 15px;
-            font-weight: 400;
+        .member-info {
             display: flex;
             align-items: center;
         }
-        .item-details i {
-            margin-left: 10px;
-            font-size: 14px;
-        }
 
-        /* Иконки для членов семьи */
-        .member-icon {
+        .initials-circle {
             width: 36px;
             height: 36px;
             border-radius: 50%;
@@ -132,104 +97,53 @@
             color: white;
             font-size: 18px;
             font-weight: 600;
+            margin-right: 15px;
+        }
+        /* Цвета из скриншота */
+        .initials-b { background-color: #8D99AE; } /* Серо-коричневый для В */
+        .initials-l { background-color: #EE3124; } /* Красный Альфа для Л */
+        .initials-o { background-color: #F7A855; } /* Оранжевый для О */
+        
+        .member-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-color);
         }
 
-        .icon-child { background-color: #801818; } 
-        .icon-mother { background-color: #C02929; } 
-        .icon-father { background-color: #EE3124; } 
-        .icon-plus { 
-            background-color: #f0f0f0; 
-            color: #555;
-            border: 1px dashed #ccc;
+        .rename-action {
+            display: flex;
+            align-items: center;
+            color: #999;
             font-size: 14px;
         }
-
-        /* FOOTER BUTTON */
-        .add-button-container {
-            padding: 20px;
-            text-align: center;
+        .rename-action i {
+            margin-left: 8px;
+            font-size: 16px;
         }
-        
-        .add-button {
+
+        /* ADD BUTTON */
+        .button-wrapper {
+            padding: 20px;
+            background-color: white; /* Фон для кнопки */
+        }
+        .add-member-button {
             width: 100%;
-            padding: 15px;
             background-color: var(--alfa-red);
             color: white;
             border: none;
             border-radius: 12px;
+            padding: 12px 20px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(238, 49, 36, 0.3);
-            transition: background-color 0.2s;
-        }
-        .add-button:hover {
-            background-color: #d12c20;
-        }
-        
-        /* Modal (для имитации ввода) */
-        .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%; 
-            height: 100%;
-            overflow: auto; 
-            background-color: rgba(0,0,0,0.4); 
-            padding-top: 150px;
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: auto;
-            padding: 20px;
-            border-radius: 15px;
-            width: 80%;
-            max-width: 300px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .modal-content h3 {
-            margin-top: 0;
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .modal-content input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0 20px 0;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        .modal-buttons {
             display: flex;
-            justify-content: space-between;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(238, 49, 36, 0.3);
         }
-
-        .modal-buttons button {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            margin: 0 5px;
-        }
-
-        #modalSave {
-            background-color: var(--alfa-red);
-            color: white;
-        }
-        
-        #modalCancel {
-            background-color: #f0f0f0;
-            color: var(--text-color);
+        .add-member-button i {
+            margin-right: 10px;
+            font-size: 20px;
         }
 
     </style>
@@ -237,170 +151,149 @@
 <body>
 
 <div class="app-screen">
-    
-    <div class="top-bar">
-        <span>9:41</span>
-        <div class="status-icons">
-            <i class="fas fa-signal"></i>
-            <i class="fas fa-wifi"></i>
-            <i class="fas fa-battery-three-quarters"></i>
-        </div>
-    </div>
-
     <header class="header-nav">
         <div class="back-title">
-            <i class="fas fa-chevron-left back-arrow" id="navToAnalyticsHome"></i>
-            <h1 class="header-title">Настройка семьи</h1>
+            <i class="fas fa-chevron-left back-arrow" id="navToAnalytics"></i>
+            <span>Настройка семьи</span>
         </div>
     </header>
 
     <main class="content">
+
+        <div class="section-title">Члены семьи</div>
+
+        <ul class="member-list" id="memberList">
+            </ul>
         
-        <div class="settings-section">
-            <div class="section-header">
-                Члены семьи
-            </div>
-            
-            <div class="setting-item" data-member="child">
-                <div class="item-info">
-                    <div class="member-icon icon-child">Р</div>
-                    <span id="nameChild">Ребенок</span>
-                </div>
-                <div class="item-details">
-                    Переименовать <i class="fas fa-chevron-right"></i>
-                </div>
-            </div>
-
-            <div class="setting-item" data-member="mother">
-                <div class="item-info">
-                    <div class="member-icon icon-mother">М</div>
-                    <span id="nameMother">Мама</span>
-                </div>
-                <div class="item-details">
-                    Переименовать <i class="fas fa-chevron-right"></i>
-                </div>
-            </div>
-
-            <div class="setting-item" data-member="father">
-                <div class="item-info">
-                    <div class="member-icon icon-father">П</div>
-                    <span id="nameFather">Папа</span>
-                </div>
-                <div class="item-details">
-                    Переименовать <i class="fas fa-chevron-right"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="add-button-container">
-            <button class="add-button" id="addNewMember">
+        <div class="button-wrapper">
+            <button class="add-member-button" id="addMember">
                 <i class="fas fa-user-plus"></i> Добавить члена семьи
             </button>
         </div>
 
     </main>
     
-    <div id="renameModal" class="modal">
-      <div class="modal-content">
-        <h3>Переименовать</h3>
-        <input type="text" id="memberNameInput" placeholder="Введите новое имя" maxlength="15">
-        <div class="modal-buttons">
-            <button id="modalCancel">Отмена</button>
-            <button id="modalSave">Сохранить</button>
+    <div id="renameModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:100; justify-content:center; align-items:center;">
+        <div style="background:white; padding:20px; border-radius:15px; width:80%; text-align:center;">
+            <h3>Переименование</h3>
+            <p>Введите новое имя для <span id="currentMemberName"></span>:</p>
+            <input type="text" id="newNameInput" placeholder="Новое имя" style="width:90%; padding:10px; margin-bottom:15px; border: 1px solid #ccc; border-radius: 8px;">
+            <button id="saveRename" style="background:var(--alfa-red); color:white; padding:10px 15px; border:none; border-radius:8px; margin-right:10px;">Сохранить</button>
+            <button id="cancelRename" style="background:#ddd; color:#333; padding:10px 15px; border:none; border-radius:8px;">Отмена</button>
         </div>
-      </div>
     </div>
 
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const backButton = document.getElementById('navToAnalyticsHome');
+        const MEMBER_DATA = [
+            // Идентификаторы соответствуют членам семьи в analytics_home.html и details_income.html
+            { id: 'child', defaultName: 'Ребенок', initial: 'В', colorClass: 'initials-b' },
+            { id: 'mother', defaultName: 'Мама', initial: 'Л', colorClass: 'initials-l' },
+            { id: 'father', defaultName: 'Папа', initial: 'О', colorClass: 'initials-o' },
+        ];
+        
+        const memberListContainer = document.getElementById('memberList');
         const renameModal = document.getElementById('renameModal');
-        const modalInput = document.getElementById('memberNameInput');
-        const modalSave = document.getElementById('modalSave');
-        const modalCancel = document.getElementById('modalCancel');
-        const memberItems = document.querySelectorAll('.setting-item');
-        
-        // Объект для хранения ссылок на элементы имен и дефолтных значений
-        const memberData = {
-            'child': { element: document.getElementById('nameChild'), default: 'Ребенок', icon: 'Р' },
-            'mother': { element: document.getElementById('nameMother'), default: 'Мама', icon: 'М' },
-            'father': { element: document.getElementById('nameFather'), default: 'Папа', icon: 'П' }
+        const newNameInput = document.getElementById('newNameInput');
+        const currentMemberNameSpan = document.getElementById('currentMemberName');
+        const saveRenameButton = document.getElementById('saveRename');
+        const cancelRenameButton = document.getElementById('cancelRename');
+
+        let activeMemberId = null;
+
+        // --- 1. Функция: Получение/Установка имени ---
+        const getMemberName = (id, defaultName) => {
+            return localStorage.getItem(`member_name_${id}`) || defaultName;
         };
 
-        let currentMemberId = null;
+        const setMemberName = (id, newName) => {
+            localStorage.setItem(`member_name_${id}`, newName);
+        };
+        
+        // --- 2. Функция: Рендеринг списка ---
+        const renderMemberList = () => {
+            memberListContainer.innerHTML = '';
+            
+            MEMBER_DATA.forEach(member => {
+                const currentName = getMemberName(member.id, member.defaultName);
+                const firstLetter = currentName.charAt(0).toUpperCase();
+                
+                const item = document.createElement('li');
+                item.className = 'member-item';
+                item.setAttribute('data-member-id', member.id);
+                item.setAttribute('data-member-name', currentName);
+                
+                item.innerHTML = `
+                    <div class="member-info">
+                        <div class="initials-circle ${member.colorClass}">${firstLetter}</div>
+                        <div class="member-name">${currentName}</div>
+                    </div>
+                    <div class="rename-action">
+                        Переименовать <i class="fas fa-chevron-right"></i>
+                    </div>
+                `;
+                
+                item.addEventListener('click', () => showRenameModal(member.id, currentName));
+                memberListContainer.appendChild(item);
+            });
+        };
+        
+        // --- 3. ЛОГИКА МОДАЛЬНОГО ОКНА ---
+        const showRenameModal = (id, currentName) => {
+            activeMemberId = id;
+            currentMemberNameSpan.textContent = currentName;
+            newNameInput.value = currentName;
+            
+            renameModal.style.display = 'flex';
+            newNameInput.focus();
+        };
 
-        // --- Функция: Загрузка имен из localStorage при загрузке страницы ---
-        const loadNames = () => {
-            for (const id in memberData) {
-                // Пытаемся получить имя из localStorage, иначе используем дефолтное
-                const storedName = localStorage.getItem(`member_name_${id}`);
-                const nameToDisplay = storedName || memberData[id].default;
+        const hideRenameModal = () => {
+            renameModal.style.display = 'none';
+            activeMemberId = null;
+        };
+        
+        saveRenameButton.addEventListener('click', () => {
+            if (activeMemberId) {
+                const newName = newNameInput.value.trim();
+                // Используем "Мама", "Папа", "Ребенок" как запасные имена, если поле пустое
+                const defaultObject = MEMBER_DATA.find(m => m.id === activeMemberId);
+                const finalName = newName || defaultObject.defaultName; 
                 
-                memberData[id].element.textContent = nameToDisplay;
-                
-                // Обновление иконки
-                const iconElement = memberData[id].element.closest('.item-info').querySelector('.member-icon');
-                iconElement.textContent = nameToDisplay.charAt(0).toUpperCase();
+                setMemberName(activeMemberId, finalName);
+                renderMemberList(); // Перерисовываем список, чтобы увидеть изменения
+                hideRenameModal();
+                alert(`Имя успешно изменено на: ${finalName}. Изменения отобразятся на экране аналитики.`);
             }
-        };
-        
-        loadNames(); // Загружаем имена при старте
+        });
 
-        // 1. Навигация назад
-        backButton.addEventListener('click', () => {
+        cancelRenameButton.addEventListener('click', hideRenameModal);
+        
+        // Позволяет сохранить по Enter
+        newNameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                saveRenameButton.click();
+            }
+        });
+
+
+        // --- 4. ЛОГИКА ПЕРЕХОДОВ ---
+        
+        // Переход обратно на экран аналитики
+        document.getElementById('navToAnalytics').addEventListener('click', () => {
             window.location.href = 'analytics_home.html';
         });
-
-        // 2. Логика открытия модального окна
-        memberItems.forEach(item => {
-            item.addEventListener('click', () => {
-                currentMemberId = item.getAttribute('data-member');
-                const currentName = memberData[currentMemberId].element.textContent;
-                
-                modalInput.value = currentName;
-                renameModal.style.display = 'block';
-                modalInput.focus();
-            });
+        
+        // Заглушка для кнопки "Добавить члена семьи"
+        document.getElementById('addMember').addEventListener('click', () => {
+            alert('Функционал добавления нового члена семьи не реализован.');
         });
 
-        // 3. Логика закрытия/отмены
-        modalCancel.addEventListener('click', () => {
-            renameModal.style.display = 'none';
-        });
 
-        window.addEventListener('click', (event) => {
-            if (event.target == renameModal) {
-                renameModal.style.display = 'none';
-            }
-        });
-
-        // 4. --- ЛОГИКА СОХРАНЕНИЯ В LOCALSTORAGE ---
-        modalSave.addEventListener('click', () => {
-            const newName = modalInput.value.trim();
-
-            if (newName && currentMemberId) {
-                // 1. Сохраняем новое имя в localStorage
-                localStorage.setItem(`member_name_${currentMemberId}`, newName);
-                
-                // 2. Обновляем DOM на текущей странице (settings_family.html)
-                const nameElement = memberData[currentMemberId].element;
-                const iconElement = nameElement.closest('.item-info').querySelector('.member-icon');
-                
-                nameElement.textContent = newName;
-                iconElement.textContent = newName.charAt(0).toUpperCase();
-
-                alert(`Имя успешно изменено на: ${newName}`);
-            }
-
-            renameModal.style.display = 'none';
-        });
-
-        // 5. Заглушка для "Добавить члена семьи"
-        document.getElementById('addNewMember').addEventListener('click', () => {
-             alert('Функционал добавления новых членов семьи будет реализован в следующем обновлении.');
-        });
+        // Инициализация
+        renderMemberList();
     });
 </script>
 </body>
