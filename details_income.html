@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        /* Общие стили и переменные */
+        /* (Сокращенные стили) */
         body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -18,9 +18,8 @@
 
         :root {
             --alfa-red: #EE3124;
-            --alfa-green: #38B000; /* Цвет для доходов */
+            --alfa-green: #38A34A;
             --text-color: #333;
-            --light-gray-bg: #f7f7f7;
             --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
@@ -33,59 +32,8 @@
             position: relative;
             padding-bottom: 80px;
         }
+        /* (Стили заголовка и навигации такие же, как в expenses.html) */
 
-        /* TOP BAR */
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 25px 8px 20px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        /* HEADER */
-        .header-nav {
-            padding: 0 20px;
-            background-color: white;
-            padding-bottom: 20px;
-        }
-
-        .back-title {
-            display: flex;
-            align-items: center;
-            padding: 15px 0;
-            font-size: 18px;
-            color: var(--text-color);
-        }
-        .back-arrow {
-            cursor: pointer;
-            margin-right: 15px;
-            font-size: 20px;
-        }
-        .header-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin: 0;
-        }
-        .header-subtitle {
-            font-size: 28px;
-            font-weight: 600;
-            margin: 0 0 10px 0;
-            padding-top: 10px;
-        }
-        .header-description {
-            font-size: 15px;
-            color: #666;
-            margin: 0;
-        }
-
-        /* CONTENT */
-        .content {
-            padding: 20px;
-            padding-top: 0;
-        }
-        
-        /* SUMMARY CARD - ОБЩИЙ ДОХОД */
         .summary-card {
             background-color: var(--alfa-green);
             color: white;
@@ -94,31 +42,14 @@
             text-align: center;
             margin-bottom: 20px;
         }
-        .summary-card p {
-            font-size: 15px;
-            font-weight: 500;
-            margin: 0;
-            opacity: 0.8;
-        }
-        .summary-card h2 {
-            font-size: 38px;
-            font-weight: 800;
-            margin: 5px 0 0 0;
-        }
 
-        /* MEMBER CARDS - ДОХОД ПО ЧЛЕНАМ СЕМЬИ */
         .member-card {
             background-color: white;
             border-radius: 20px;
             box-shadow: var(--card-shadow);
-            margin-bottom: 15px;
+            margin-bottom: 25px;
             padding: 20px;
-            cursor: pointer;
             border: 1px solid #eee;
-            transition: box-shadow 0.2s;
-        }
-        .member-card:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .member-header {
@@ -135,7 +66,7 @@
             align-items: center;
         }
         .member-header h3 i {
-            color: var(--alfa-green);
+            color: var(--alfa-green); /* Green for income */
             margin-right: 10px;
             font-size: 20px;
         }
@@ -144,73 +75,10 @@
             font-weight: 700;
             color: var(--alfa-green);
         }
-
-        .income-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .income-item {
-            display: flex;
-            justify-content: space-between;
-            font-size: 15px;
-            color: #555;
-            padding: 8px 0;
-            border-top: 1px solid #f0f0f0;
-        }
-        .income-item:first-child {
-            border-top: none;
-        }
-        .income-item span:first-child {
-            display: flex;
-            align-items: center;
-            color: var(--text-color);
-        }
-        .income-item i {
+        .category-item i {
             font-size: 8px;
-            color: var(--alfa-green);
             margin-right: 8px;
-        }
-        .income-item span:last-child {
-            font-weight: 500;
-        }
-        
-        /* BOTTOM NAV - Копируем из main_bank_screen.html */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 390px;
-            height: 70px;
-            background-color: white;
-            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding-bottom: 5px; 
-            font-size: 11px;
-            color: #888;
-            z-index: 20;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            position: relative;
-            font-weight: 500;
-        }
-        .nav-item i {
-            font-size: 22px;
-            margin-bottom: 4px;
-        }
-        
-        /* Кнопка "История" активна на этом экране */
-        .nav-item:nth-child(4) i, .nav-item:nth-child(4) span { 
-            color: var(--alfa-red);
+            color: var(--alfa-green); /* Green dots for income categories */
         }
     </style>
 </head>
@@ -227,81 +95,51 @@
         </div>
     </div>
 
-    <header class="header-nav">
+    <header class="header-nav" style="padding: 0 20px; background-color: white; padding-bottom: 20px;">
         <div class="back-title">
             <i class="fas fa-chevron-left back-arrow" id="navToAnalyticsHome"></i>
             <h1 class="header-title">Октябрь</h1>
         </div>
         <h2 class="header-subtitle">Детализация доходов</h2>
         <p class="header-description">
-            Общая картина поступлений в семью.
+            Подробная разбивка поступлений по каждому члену семьи.
         </p>
+
+        <div class="tabs" style="display: flex; gap: 8px; margin-top: 15px; overflow-x: auto; padding-bottom: 10px;">
+            <button class="tab active" style="padding: 6px 12px; border: none; border-radius: 18px; background-color: #000; color: white;">Все</button>
+            <button class="tab" style="padding: 6px 12px; border: none; border-radius: 18px; background-color: #f0f0f0; color: #333;">Зарплата</button>
+            <button class="tab" style="padding: 6px 12px; border: none; border-radius: 18px; background-color: #f0f0f0; color: #333;">Кэшбэк</button>
+        </div>
     </header>
 
-    <main class="content">
+    <main class="content" id="memberCardsContainer" style="padding: 20px; padding-top: 0;">
 
         <div class="summary-card">
             <p>Общий доход семьи за Октябрь:</p>
             <h2>150 000 ₽</h2>
         </div>
         
-        <div class="member-card" data-member-id="father" id="fatherIncomeCard">
-            <div class="member-header">
-                <h3><i class="fas fa-male"></i> <span id="fatherName">Папа</span></h3>
-                <span class="member-amount">85 000 ₽</span>
-            </div>
-            <ul class="income-list">
-                <li class="income-item"><span><i class="fas fa-circle"></i> Зарплата</span><span>75 000 ₽</span></li>
-                <li class="income-item"><span><i class="fas fa-circle"></i> Продажа вещей</span><span>10 000 ₽</span></li>
-            </ul>
-        </div>
-        
-        <div class="member-card" data-member-id="mother" id="motherIncomeCard">
-            <div class="member-header">
-                <h3><i class="fas fa-female"></i> <span id="motherName">Мама</span></h3>
-                <span class="member-amount">55 000 ₽</span>
-            </div>
-            <ul class="income-list">
-                <li class="income-item"><span><i class="fas fa-circle"></i> Зарплата</span><span>44 000 ₽</span></li>
-                <li class="income-item"><span><i class="fas fa-circle"></i> Кэшбэк</span><span>5 500 ₽</span></li>
-                <li class="income-item"><span><i class="fas fa-circle"></i> Дивиденды</span><span>5 500 ₽</span></li>
-            </ul>
-        </div>
-        
-        <div class="member-card" data-member-id="child" id="childIncomeCard">
-            <div class="member-header">
-                <h3><i class="fas fa-child"></i> <span id="childName">Ребенок</span></h3>
-                <span class="member-amount">10 000 ₽</span>
-            </div>
-            <ul class="income-list">
-                <li class="income-item"><span><i class="fas fa-circle"></i> Подарок</span><span>5 000 ₽</span></li>
-                <li class="income-item"><span><i class="fas fa-circle"></i> Стипендия</span><span>5 000 ₽</span></li>
-            </ul>
-        </div>
-        
-    </main>
+        </main>
 
-    <nav class="bottom-nav">
-        <div class="nav-item">
-            <i class="fas fa-home"></i>
+    <nav class="bottom-nav" style="position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); max-width: 390px; width: 100%; height: 70px; background-color: white; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05); display: flex; justify-content: space-around; align-items: center; padding-bottom: 5px; font-size: 11px; color: #888; z-index: 20;">
+        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
+            <i class="fas fa-home" style="font-size: 22px; margin-bottom: 4px;"></i>
             <span>Главный</span>
         </div>
-        <div class="nav-item">
-            <i class="fas fa-credit-card"></i>
-            <span class="badge one">1</span>
+        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
+            <i class="fas fa-credit-card" style="font-size: 22px; margin-bottom: 4px;"></i>
             <span>Платежи</span>
         </div>
-        <div class="nav-item">
-            <i class="fas fa-heart"></i>
+        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
+            <i class="fas fa-heart" style="font-size: 22px; margin-bottom: 4px;"></i>
             <span>Выгода</span>
         </div>
-        <div class="nav-item active-nav">
-            <i class="fas fa-history"></i>
+        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500; color: var(--alfa-red);">
+            <i class="fas fa-history" style="font-size: 22px; margin-bottom: 4px;"></i>
             <span>История</span>
         </div>
-        <div class="nav-item">
-            <i class="fas fa-comment-dots"></i>
-            <span class="badge four">4</span>
+        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
+            <i class="fas fa-comment-dots" style="font-size: 22px; margin-bottom: 4px;"></i>
             <span>Чаты</span>
         </div>
     </nav>
@@ -309,55 +147,107 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        
-        // --- Функция: Загрузка имен из localStorage (для поддержки переименования) ---
-        const getMemberName = (id, defaultName) => {
-            return localStorage.getItem(`member_name_${id}`) || defaultName;
+        const memberCardsContainer = document.getElementById('memberCardsContainer');
+
+        // --- LOCAL STORAGE MANAGEMENT ---
+        const DEFAULT_MEMBERS_CONFIG = [
+            { id: 'father', name: 'Папа', icon: 'male', role: 'Основной пользователь', type: 'main', editable: true, removable: false },
+            { id: 'mother', name: 'Мама', icon: 'female', role: 'Пользователь', type: 'user', editable: true, removable: false },
+            { id: 'child', name: 'Ребенок', icon: 'child', role: 'Зависимый профиль', type: 'dependent', editable: true, removable: true }
+        ];
+
+        function getFamilyMembers() {
+            const membersJson = localStorage.getItem('family_members');
+            if (membersJson) {
+                return JSON.parse(membersJson);
+            }
+            localStorage.setItem('family_members', JSON.stringify(DEFAULT_MEMBERS_CONFIG));
+            return DEFAULT_MEMBERS_CONFIG;
+        }
+
+        // --- ШАБЛОНЫ КАРТОЧЕК ДОХОДОВ (Условные данные) ---
+        const INCOME_TEMPLATES = {
+            'child': {
+                amount: '5 000 ₽',
+                categories: [
+                    { name: 'Подарок', amount: '3 000 ₽' },
+                    { name: 'Стипендия', amount: '2 000 ₽' }
+                ]
+            },
+            'mother': {
+                amount: '55 000 ₽',
+                categories: [
+                    { name: 'Зарплата', amount: '44 000 ₽' },
+                    { name: 'Кэшбэк', amount: '5 500 ₽' },
+                    { name: 'Прочее', amount: '5 500 ₽' }
+                ]
+            },
+            'father': {
+                amount: '90 000 ₽',
+                categories: [
+                    { name: 'Зарплата', amount: '80 000 ₽' },
+                    { name: 'Проценты по вкладу', amount: '10 000 ₽' }
+                ]
+            },
+            'dynamic': {
+                amount: '0 ₽',
+                categories: [
+                    { name: 'Дополнительный доход', amount: '0 ₽' }
+                ]
+            }
         };
 
-        const childName = getMemberName('child', 'Ребенок');
-        const motherName = getMemberName('mother', 'Мама');
-        const fatherName = getMemberName('father', 'Папа');
-        
-        // Обновление имен в заголовках карточек
-        document.getElementById('childName').textContent = childName;
-        document.getElementById('motherName').textContent = motherName;
-        document.getElementById('fatherName').textContent = fatherName;
-        
-        
-        // --- ЛОГИКА ПЕРЕХОДОВ ---
-        
-        // 1. Навигация назад к "Вся аналитика"
-        document.getElementById('navToAnalyticsHome').addEventListener('click', () => {
-            // Переходим на экран "Вся аналитика" (в идеале, с активным табом "Доходы")
-            window.location.href = 'analytics_home.html'; 
-        });
+        // --- ДИНАМИЧЕСКИЙ РЕНДЕРИНГ ---
+        function generateCategoryListHTML(categories) {
+            return categories.map(cat => `
+                <li class="category-item">
+                    <span><i class="fas fa-circle"></i> ${cat.name}</span>
+                    <span>${cat.amount}</span>
+                </li>
+            `).join('');
+        }
 
-        // 2. Навигация по нижнему меню
-        document.querySelector('.bottom-nav .nav-item:first-child').addEventListener('click', () => {
-            window.location.href = 'main_bank_screen.html'; 
-        });
+        function renderMemberCards() {
+            const members = getFamilyMembers();
+            
+            // Удаляем все старые карточки
+            const existingCards = document.querySelectorAll('.member-card');
+            existingCards.forEach(card => card.remove());
+            
+            const summaryCard = document.querySelector('.summary-card');
+            let html = '';
+
+            members.forEach(member => {
+                const templateKey = member.type === 'dynamic' ? 'dynamic' : member.id;
+                const template = INCOME_TEMPLATES[templateKey] || INCOME_TEMPLATES['dynamic'];
+                
+                const iconClass = member.icon ? `fa-${member.icon}` : 'fa-user';
+
+                html += `
+                    <div class="member-card" id="member_${member.id}">
+                        <div class="member-header">
+                            <h3><i class="fas ${iconClass}"></i> <span>${member.name}</span></h3>
+                            <span class="member-amount">${template.amount}</span>
+                        </div>
+                        <ul class="category-list">
+                            ${generateCategoryListHTML(template.categories)}
+                        </ul>
+                    </div>
+                `;
+            });
+            
+            if (summaryCard) {
+                summaryCard.insertAdjacentHTML('afterend', html);
+            } else {
+                memberCardsContainer.innerHTML += html;
+            }
+        }
         
-        // 3. Заглушки для клика по карточке (показывает, что может быть еще большая детализация)
-        document.getElementById('fatherIncomeCard').addEventListener('click', () => {
-             alert(`Переход к полной детализации доходов для ${fatherName}.`);
-        });
-        document.getElementById('motherIncomeCard').addEventListener('click', () => {
-             alert(`Переход к полной детализации доходов для ${motherName}.`);
-        });
-        document.getElementById('childIncomeCard').addEventListener('click', () => {
-             alert(`Переход к полной детализации доходов для ${childName}.`);
-        });
-        
-        // Остальные пункты нижнего меню пока остаются заглушками
-        document.querySelector('.bottom-nav .nav-item:nth-child(2)').addEventListener('click', () => {
-             alert('Переход на Платежи');
-        });
-        document.querySelector('.bottom-nav .nav-item:nth-child(3)').addEventListener('click', () => {
-             alert('Переход на Выгоду');
-        });
-         document.querySelector('.bottom-nav .nav-item:nth-child(5)').addEventListener('click', () => {
-             alert('Переход на Чаты');
+        // --- ИНИЦИАЛИЗАЦИЯ И НАВИГАЦИЯ ---
+        renderMemberCards();
+
+        document.getElementById('navToAnalyticsHome').addEventListener('click', () => {
+            window.location.href = 'analytics_home.html'; 
         });
     });
 </script>
