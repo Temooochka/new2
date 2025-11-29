@@ -5,9 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Настройки семьи</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <script>
+        // app_data.js (Встроен для простоты)
+        const DEFAULT_FAMILY_MEMBERS = [
+            { id: 'child', defaultRole: 'Ребенок', currentName: 'Ребенок', roleStatus: 'Зависимый профиль', icon: 'child', editable: true, removable: true },
+            { id: 'parent2', defaultRole: 'Мама', currentName: 'Мама', roleStatus: 'Пользователь', icon: 'female', editable: true, removable: false },
+            { id: 'parent1', defaultRole: 'Папа', currentName: 'Папа', roleStatus: 'Основной пользователь', icon: 'male', editable: true, removable: false }
+        ];
+
+        function getFamilyMembers() {
+            try {
+                const storedData = localStorage.getItem('familyMembers');
+                if (storedData) {
+                    return JSON.parse(storedData);
+                }
+            } catch (e) {
+                console.error("Ошибка при чтении localStorage", e);
+            }
+            saveFamilyMembers(DEFAULT_FAMILY_MEMBERS); // Инициализация
+            return DEFAULT_FAMILY_MEMBERS;
+        }
+
+        function saveFamilyMembers(members) {
+            try {
+                localStorage.setItem('familyMembers', JSON.stringify(members));
+            } catch (e) {
+                console.error("Ошибка при записи в localStorage", e);
+            }
+        }
+    </script>
     <style>
-        /* (Стили для консистентности) */
+        /* Общие стили для консистентности */
         body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -108,6 +136,15 @@
             margin: 0;
             color: var(--text-color);
         }
+        .member-details input {
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            color: var(--text-color);
+            padding: 0;
+            width: 100%;
+        }
         .member-details p {
             font-size: 13px;
             color: #888;
@@ -115,7 +152,7 @@
             margin-top: 2px;
         }
 
-        .icon-father, .icon-mother, .icon-dynamic {
+        .icon-male, .icon-female, .icon-dynamic {
             background-color: var(--alfa-red);
         }
         .icon-child {
@@ -126,14 +163,13 @@
             border: none;
             background: none;
             cursor: pointer;
-            color: var(--alfa-red);
+            color: #888;
             font-size: 18px;
             padding: 5px;
             transition: opacity 0.2s;
         }
-
-        .delete-btn {
-            color: #888;
+        .action-button:hover {
+            opacity: 0.7;
         }
         
         .add-member-btn {
@@ -155,72 +191,51 @@
             margin-right: 10px;
             font-size: 20px;
         }
-
-        .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.4); 
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: auto;
-            padding: 30px;
-            border-radius: 20px;
-            width: 80%;
-            max-width: 300px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .modal-content h3 {
-            margin-top: 0;
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-color);
-        }
-
-        .modal-content input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0 20px 0;
-            display: inline-block;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        .modal-btn {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        #saveNameBtn {
+        .save-btn {
             background-color: var(--alfa-red);
             color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 18px;
+            width: 100%;
+            margin-top: 50px;
+            cursor: pointer;
+            font-weight: 600;
         }
 
-        #cancelBtn {
-            background-color: #e0e0e0;
-            color: var(--text-color);
+        /* Bottom Nav (для консистентности) */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 390px;
+            width: 100%;
+            height: 70px;
+            background-color: white;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 5px;
+            font-size: 11px;
+            color: #888;
+            z-index: 20;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        .nav-item.active {
+            color: var(--alfa-red);
         }
     </style>
 </head>
@@ -253,191 +268,127 @@
             <i class="fas fa-user-plus"></i> Добавить члена семьи
         </button>
         
+        <button class="save-btn" onclick="saveChanges()">Сохранить изменения</button>
+        
     </main>
 
-    <div id="editNameModal" class="modal">
-        <div class="modal-content">
-            <h3>Редактировать имя</h3>
-            <input type="text" id="memberNameInput" placeholder="Введите новое имя" maxlength="20">
-            <div class="modal-actions">
-                <button class="modal-btn" id="cancelBtn">Отмена</button>
-                <button class="modal-btn" id="saveNameBtn">Сохранить</button>
-            </div>
-        </div>
-    </div>
-
-
-    <nav class="bottom-nav" style="position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); max-width: 390px; width: 100%; height: 70px; background-color: white; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05); display: flex; justify-content: space-around; align-items: center; padding-bottom: 5px; font-size: 11px; color: #888; z-index: 20;">
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
-            <i class="fas fa-home" style="font-size: 22px; margin-bottom: 4px;"></i>
+    <nav class="bottom-nav">
+        <div class="nav-item">
+            <i class="fas fa-home"></i>
             <span>Главный</span>
         </div>
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
-            <i class="fas fa-credit-card" style="font-size: 22px; margin-bottom: 4px;"></i>
+        <div class="nav-item">
+            <i class="fas fa-credit-card"></i>
             <span>Платежи</span>
         </div>
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
-            <i class="fas fa-heart" style="font-size: 22px; margin-bottom: 4px;"></i>
+        <div class="nav-item">
+            <i class="fas fa-heart"></i>
             <span>Выгода</span>
         </div>
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500; color: var(--alfa-red);">
-            <i class="fas fa-history" style="font-size: 22px; margin-bottom: 4px;"></i>
+        <div class="nav-item active">
+            <i class="fas fa-history"></i>
             <span>История</span>
         </div>
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
-            <i class="fas fa-comment-dots" style="font-size: 22px; margin-bottom: 4px;"></i>
+        <div class="nav-item">
+            <i class="fas fa-comment-dots"></i>
             <span>Чаты</span>
         </div>
     </nav>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const memberList = document.getElementById('memberList');
-        const addMemberBtn = document.getElementById('addMemberBtn');
-        const navToAnalyticsHome = document.getElementById('navToAnalyticsHome');
-        const modal = document.getElementById('editNameModal');
-        const nameInput = document.getElementById('memberNameInput');
-        const saveBtn = document.getElementById('saveNameBtn');
-        const cancelBtn = document.getElementById('cancelBtn');
-        let currentEditingId = null;
-
-        // --- 1. КОНФИГУРАЦИЯ ПО УМОЛЧАНИЮ ---
-        const DEFAULT_MEMBERS_CONFIG = [
-            // type: 'main'/'user'/'dependent'/'dynamic' - используется для логики
-            { id: 'father', name: 'Папа', icon: 'male', role: 'Основной пользователь', type: 'main', editable: true, removable: false },
-            { id: 'mother', name: 'Мама', icon: 'female', role: 'Пользователь', type: 'user', editable: true, removable: false },
-            { id: 'child', name: 'Ребенок', icon: 'child', role: 'Зависимый профиль', type: 'dependent', editable: true, removable: true }
-        ];
+    // Функции getFamilyMembers и saveFamilyMembers доступны из встроенного скрипта выше.
         
-        // --- 2. УПРАВЛЕНИЕ LOCAL STORAGE ---
-        function getFamilyMembers() {
-            const membersJson = localStorage.getItem('family_members');
-            if (membersJson) {
-                return JSON.parse(membersJson);
-            }
-            // Инициализация при первом запуске
-            localStorage.setItem('family_members', JSON.stringify(DEFAULT_MEMBERS_CONFIG));
-            return DEFAULT_MEMBERS_CONFIG;
-        }
+    const memberList = document.getElementById('memberList');
+    const addMemberBtn = document.getElementById('addMemberBtn');
+    const navToAnalyticsHome = document.getElementById('navToAnalyticsHome');
 
-        function saveFamilyMembers(members) {
-            localStorage.setItem('family_members', JSON.stringify(members));
-            renderMemberList(); // Перерисовка после сохранения
-        }
+    function renderMemberList() {
+        const members = getFamilyMembers();
+        memberList.innerHTML = ''; // Очистка перед перерисовкой
 
-        // --- 3. ЛОГИКА РЕНДЕРИНГА ---
-        function createMemberItemHTML(member) {
-            const deleteButton = member.removable ? 
-                `<button class="action-button delete-btn" data-id="${member.id}" data-action="delete"><i class="fas fa-trash"></i></button>` : '';
-
-            const editButton = member.editable ? 
-                `<button class="action-button" data-id="${member.id}" data-action="edit"><i class="fas fa-pencil-alt"></i></button>` : '';
+        members.forEach(member => {
+            const item = document.createElement('div');
+            item.className = 'member-item';
             
-            // Иконки и классы
-            const isDynamic = member.type === 'dynamic';
-            const iconClass = isDynamic ? 'icon-dynamic' : `icon-${member.id}`;
-            const iconFa = isDynamic ? 'fas fa-user' : `fas fa-${member.icon}`;
+            const iconFa = member.icon === 'male' ? 'fas fa-male' : 
+                           member.icon === 'female' ? 'fas fa-female' : 
+                           member.icon === 'child' ? 'fas fa-child' : 
+                           'fas fa-user'; // Общая иконка для динамических
 
-            return `
-                <div class="member-item" data-id="${member.id}">
-                    <div class="member-info">
-                        <div class="member-icon ${iconClass}">
-                            <i class="${iconFa}"></i>
-                        </div>
-                        <div class="member-details">
-                            <h4>${member.name}</h4>
-                            <p>${member.role}</p>
-                        </div>
+            const iconClass = member.id.startsWith('dynamic_') ? 'icon-dynamic' : `icon-${member.icon}`;
+
+            item.innerHTML = `
+                <div class="member-info">
+                    <div class="member-icon ${iconClass}">
+                        <i class="${iconFa}"></i>
                     </div>
-                    <div class="member-actions">
-                        ${editButton}
-                        ${deleteButton}
+                    <div class="member-details">
+                        <input type="text" id="name-${member.id}" value="${member.currentName}" maxlength="20" ${member.editable ? '' : 'disabled'}>
+                        <p>${member.roleStatus}</p>
                     </div>
                 </div>
+                <div class="member-actions">
+                    ${member.editable ? `<button class="action-button edit-btn" data-id="${member.id}"><i class="fas fa-pencil-alt"></i></button>` : ''}
+                    ${member.removable ? `<button class="action-button delete-btn" data-id="${member.id}"><i class="fas fa-trash"></i></button>` : ''}
+                </div>
             `;
-        }
+            memberList.appendChild(item);
+        });
+    }
 
-        function renderMemberList() {
-            const members = getFamilyMembers();
-            memberList.innerHTML = members.map(createMemberItemHTML).join('');
-        }
-
-        // --- 4. ОБРАБОТЧИКИ ДЕЙСТВИЙ ---
-        
-        // Добавление члена семьи
-        addMemberBtn.addEventListener('click', () => {
-            const members = getFamilyMembers();
-            const dynamicCount = members.filter(m => m.type === 'dynamic').length + 1;
-            const newMember = {
-                id: `dynamic_${Date.now()}`, 
-                name: `Родитель #${dynamicCount}`,
-                icon: 'user',
-                role: 'Дополнительный профиль',
-                type: 'dynamic',
-                editable: true,
-                removable: true
+    function saveChanges() {
+        const members = getFamilyMembers();
+        const updatedMembers = members.map(member => {
+            const input = document.getElementById(`name-${member.id}`);
+            return {
+                ...member,
+                currentName: input ? input.value.trim() : member.currentName
             };
-            members.push(newMember);
-            saveFamilyMembers(members);
         });
 
-        // Редактирование / Удаление
-        memberList.addEventListener('click', (e) => {
-            const button = e.target.closest('.action-button');
-            if (!button) return;
+        saveFamilyMembers(updatedMembers);
+        alert('Настройки сохранены! Перейдите на страницу аналитики, чтобы увидеть изменения.');
+    }
 
-            const memberId = button.dataset.id;
-            const action = button.dataset.action;
-            let members = getFamilyMembers();
-            let memberIndex = members.findIndex(m => m.id === memberId);
-
-            if (memberIndex === -1) return;
-
-            if (action === 'edit') {
-                currentEditingId = memberId;
-                nameInput.value = members[memberIndex].name;
-                modal.style.display = 'flex';
-                nameInput.focus();
-            } else if (action === 'delete') {
-                if (confirm(`Вы уверены, что хотите удалить члена семьи "${members[memberIndex].name}"?`)) {
-                    members.splice(memberIndex, 1);
-                    saveFamilyMembers(members);
-                }
-            }
-        });
-
-        // Сохранение имени из модального окна
-        saveBtn.addEventListener('click', () => {
-            const newName = nameInput.value.trim();
-            if (newName && currentEditingId) {
-                let members = getFamilyMembers();
-                let memberIndex = members.findIndex(m => m.id === currentEditingId);
-                if (memberIndex !== -1) {
-                    members[memberIndex].name = newName;
-                    saveFamilyMembers(members);
-                }
-                modal.style.display = 'none';
-                currentEditingId = null;
-            } else {
-                alert('Имя не может быть пустым.');
-            }
-        });
-
-        // Отмена редактирования
-        cancelBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-            currentEditingId = null;
-        });
-
-        // Навигация назад
-        navToAnalyticsHome.addEventListener('click', () => {
-            window.location.href = 'analytics_home.html'; 
-        });
-
-        // Инициализация
-        renderMemberList();
+    addMemberBtn.addEventListener('click', () => {
+        const members = getFamilyMembers();
+        const dynamicCount = members.filter(m => m.id.startsWith('dynamic_')).length + 1;
+        const newMember = {
+            id: `dynamic_${Date.now()}`, 
+            defaultRole: `Родитель #${dynamicCount}`, 
+            currentName: `Родитель #${dynamicCount}`,
+            roleStatus: 'Дополнительный профиль',
+            icon: 'user', // Общая иконка
+            editable: true,
+            removable: true
+        };
+        members.push(newMember);
+        saveFamilyMembers(members);
+        renderMemberList(); // Перерисовать список после добавления
     });
+
+    memberList.addEventListener('click', (e) => {
+        const deleteButton = e.target.closest('.delete-btn');
+        if (deleteButton) {
+            const memberId = deleteButton.dataset.id;
+            if (confirm('Вы уверены, что хотите удалить этого члена семьи?')) {
+                let members = getFamilyMembers();
+                members = members.filter(m => m.id !== memberId);
+                saveFamilyMembers(members);
+                renderMemberList();
+            }
+        }
+        // Логика для кнопки "Редактировать" теперь не нужна, так как поле ввода всегда активно.
+        // Можно добавить фокус на поле ввода при клике на иконку карандаша, если требуется
+    });
+
+    navToAnalyticsHome.addEventListener('click', () => {
+        window.location.href = 'analytics_home.html'; 
+    });
+
+    // Инициализация
+    renderMemberList();
 </script>
 </body>
 </html>
