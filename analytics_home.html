@@ -458,13 +458,13 @@
         // --- Обновление HTML легенды (абсолютные значения и динамические имена) ---
         const updateHTMLLegend = () => {
             document.querySelector('[data-segment-id="member_child"]').innerHTML = 
-                `<span class="color-swatch c1"></span>${childName}: **30 000 ₽**`;
+                `<span class="color-swatch c1"></span>${childName}: 30 000 ₽`;
             
             document.querySelector('[data-segment-id="member_mother"]').innerHTML = 
-                `<span class="color-swatch c2"></span>${motherName}: **52 500 ₽**`;
+                `<span class="color-swatch c2"></span>${motherName}: 52 500 ₽`;
             
             document.querySelector('[data-segment-id="member_father"]').innerHTML = 
-                `<span class="color-swatch c3"></span>${fatherName}: **67 500 ₽**`;
+                `<span class="color-swatch c3"></span>${fatherName}: 67 500 ₽`;
         };
         
         updateHTMLLegend();
