@@ -196,7 +196,10 @@
             font-size: 16px;
             line-height: 1.2;
             font-weight: 500;
-            cursor: pointer; /* Делаем легенду кликабельной */
+            cursor: pointer; 
+        }
+        .legend-item b {
+            font-weight: 600;
         }
         .color-swatch {
             display: inline-block;
@@ -241,7 +244,7 @@
             color: white;
         }
         
-        /* BOTTOM NAV - Копируем из main_bank_screen.html */
+        /* BOTTOM NAV */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -346,9 +349,9 @@
             
             <div class="chart-footer">
                 <ul class="legend">
-                    <li class="legend-item" data-segment-id="member_child"><span class="color-swatch c1"></span>Ребенок: 30 000 ₽</li>
-                    <li class="legend-item" data-segment-id="member_mother"><span class="color-swatch c2"></span>Мама: 52 500 ₽</li>
-                    <li class="legend-item" data-segment-id="member_father"><span class="color-swatch c3"></span>Папа: 67 500 ₽</li>
+                    <li class="legend-item" data-segment-id="member_child"><span class="color-swatch c1"></span>Ребенок: **30 000 ₽**</li>
+                    <li class="legend-item" data-segment-id="member_mother"><span class="color-swatch c2"></span>Мама: **52 500 ₽**</li>
+                    <li class="legend-item" data-segment-id="member_father"><span class="color-swatch c3"></span>Папа: **67 500 ₽**</li>
                 </ul>
 
                 <div class="actions">
@@ -455,16 +458,17 @@
             }
         });
         
-        // --- Обновление HTML легенды (абсолютные значения и динамические имена) ---
+        // --- Обновление HTML легенды (динамические имена и жирность сумм) ---
         const updateHTMLLegend = () => {
+            // Имя: **Сумма ₽**
             document.querySelector('[data-segment-id="member_child"]').innerHTML = 
-                `<span class="color-swatch c1"></span>${childName}: 30 000 ₽`;
+                `<span class="color-swatch c1"></span>${childName}: <b>30 000 ₽</b>`;
             
             document.querySelector('[data-segment-id="member_mother"]').innerHTML = 
-                `<span class="color-swatch c2"></span>${motherName}: 52 500 ₽`;
+                `<span class="color-swatch c2"></span>${motherName}: <b>52 500 ₽</b>`;
             
             document.querySelector('[data-segment-id="member_father"]').innerHTML = 
-                `<span class="color-swatch c3"></span>${fatherName}: 67 500 ₽`;
+                `<span class="color-swatch c3"></span>${fatherName}: <b>67 500 ₽</b>`;
         };
         
         updateHTMLLegend();
@@ -495,14 +499,14 @@
             window.location.href = 'settings_family.html'; 
         });
         
-        // 4. Переход на Импорт данных (Иконка Загрузки)
+        // 4. Переход на Импорт данных (Иконка Загрузки) - ЗАКЛЮЧИТЕЛЬНАЯ ЗАГЛУШКА
         document.getElementById('navToImport').addEventListener('click', () => {
             alert('Переход на: import_data.html'); 
         });
 
-        // 5. Переход на Рекомендации ИИ (Кнопка Альфа-ИИ)
+        // 5. Переход на Рекомендации ИИ (Кнопка Альфа-ИИ) - ИСПРАВЛЕНО
         const navToRecommendations = () => {
-            alert('Переход на: ai_recommendations.html'); 
+            window.location.href = 'ai_recommendations.html'; 
         };
         document.getElementById('navToRecommendationsButton').addEventListener('click', navToRecommendations);
         document.getElementById('navToRecommendationsCard').addEventListener('click', navToRecommendations);
