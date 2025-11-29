@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
     <style>
-        /* Общие переменные и стили */
+        /* Общие переменные и стили (как в предыдущем ответе) */
         body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -19,10 +19,10 @@
 
         :root {
             --alfa-red: #EE3124;
-            /* Цвета для графика (на основе скриншотов) */
+            /* Цвета для графика */
             --red-c1-dark: #801818; 
             --red-c2-medium: #C02929;
-            --red-c3-light: #E04444; 
+            --red-c3-light: #EE3124; /* Используем основной Альфа-красный для Папы */
             
             --bg-light-gray: #F7F7F7;
             --text-color: #333;
@@ -63,7 +63,7 @@
             color: var(--text-color);
         }
         .settings-icon {
-            transform: rotate(90deg); /* Имитация иконки настроек, повернутой на 90 градусов */
+            transform: rotate(90deg);
             cursor: pointer;
         }
         .back-arrow {
@@ -208,7 +208,7 @@
         /* Цвета из скриншотов */
         .c1 { background-color: var(--red-c1-dark); }
         .c2 { background-color: var(--red-c2-medium); }
-        .c3 { background-color: var(--alfa-red); } 
+        .c3 { background-color: var(--red-c3-light); } 
 
         .actions i {
             font-size: 22px;
@@ -222,7 +222,6 @@
             padding: 15px 20px;
         }
         .ai-button {
-            /* Имитация градиентной кнопки "Альфа-ИИ" */
             background: linear-gradient(90deg, #F06E66 30%, var(--alfa-red));
             color: white;
             border: none;
@@ -331,7 +330,7 @@
 
     <main class="content">
 
-        <div class="card banner-card">
+        <div class="card banner-card" id="navToFamilyAnalytics">
             <div class="banner-text">
                 <h3>Семейная аналитика расходов</h3>
                 <p>Статистика по семейным тратам <span class="arrow-right">→</span></p>
@@ -358,12 +357,12 @@
             </div>
         </div>
 
-        <div class="card banner-card ai-card">
+        <div class="card banner-card ai-card" id="navToRecommendationsCard">
             <div class="banner-text">
                 <h3>Рекомендации ИИ</h3>
                 <p>На базе семейных расходов <span class="arrow-right">→</span></p>
             </div>
-            <button class="ai-button" id="navToRecommendations">Альфа-ИИ<i class="fas fa-plus-circle"></i></button>
+            <button class="ai-button" id="navToRecommendationsButton">Альфа-ИИ<i class="fas fa-plus-circle"></i></button>
         </div>
 
     </main>
@@ -396,10 +395,10 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Логика для графика
+        // --- ЛОГИКА ГРАФИКА (с анимацией при наведении) ---
         const ctx = document.getElementById('expenseChart').getContext('2d');
         new Chart(ctx, {
-            type: 'doughnut', // Используем Doughnut (бублик) для лучшего соответствия скриншоту
+            type: 'doughnut', // Используем Doughnut (бублик)
             data: {
                 labels: ['Ребенок', 'Мама', 'Папа'], 
                 datasets: [{
@@ -407,7 +406,7 @@
                     data: [20, 35, 45], 
                     backgroundColor: ['#801818', '#C02929', '#EE3124'],
                     borderWidth: 0,
-                    hoverOffset: 0
+                    hoverOffset: 10 // Сектор выдвигается на 10px при наведении
                 }]
             },
             options: {
@@ -416,12 +415,13 @@
                 cutout: '70%', // Делаем бублик
                 plugins: {
                     legend: { display: false },
-                    tooltip: { enabled: false }
+                    tooltip: { enabled: true } // Оставляем всплывающие подсказки включенными для интерактивности
                 },
                 // Анимация при загрузке
                 animation: {
                     animateRotate: true,
-                    animateScale: true
+                    animateScale: true,
+                    duration: 1000 // Длительность анимации
                 }
             }
         });
@@ -435,43 +435,51 @@
         
         // 2. Переход на Детализацию расходов (Расходы Tab)
         document.getElementById('expensesTab').addEventListener('click', () => {
-            // Для этого таба нам понадобится новый файл, назовем его details_expenses.html
             window.location.href = 'details_expenses.html'; 
         });
         
-        // 3. Переход на настройки семьи (Иконка Карандаша или Настроек)
+        // 3. Переход на настройки семьи (Иконка Карандаша)
         document.getElementById('navToRename').addEventListener('click', () => {
-            // Для этого таба нам понадобится новый файл, назовем его settings_family.html
             window.location.href = 'settings_family.html'; 
         });
 
         // 4. Переход на Импорт данных (Иконка Загрузки)
         document.getElementById('navToImport').addEventListener('click', () => {
-            // Для этого таба нам понадобится новый файл, назовем его import_data.html
             window.location.href = 'import_data.html'; 
         });
 
         // 5. Переход на Рекомендации ИИ (Кнопка Альфа-ИИ)
-        document.getElementById('navToRecommendations').addEventListener('click', () => {
-            // Для этого таба нам понадобится новый файл, назовем его ai_recommendations.html
-            window.location.href = 'ai_recommendations.html'; 
+        const navToRecommendations = () => {
+            window.location.href = 'ai_recommendations.html';
+        };
+        document.getElementById('navToRecommendationsButton').addEventListener('click', navToRecommendations);
+        document.getElementById('navToRecommendationsCard').addEventListener('click', navToRecommendations);
+        
+        // 6. Переход на Семейную аналитику (Карточка)
+        document.getElementById('navToFamilyAnalytics').addEventListener('click', () => {
+            window.location.href = 'details_expenses.html'; // По логике, ведет на детализацию
         });
 
-        // 6. Заглушка для иконки "Настройки"
+        // 7. Заглушка для иконки "Настройки"
         document.getElementById('navToSettings').addEventListener('click', () => {
             alert('Сортировка/Фильтрация не реализована.');
         });
         
-        // 7. Заглушка для таба "Доходы"
+        // 8. Заглушка для таба "Доходы"
         document.getElementById('incomeTab').addEventListener('click', () => {
              document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
              document.getElementById('incomeTab').classList.add('active');
-             alert('Экран "Доходы" временно не реализован. (Смотрите "Снимок экрана 2025-11-28 в 19.57.20.jpg" для примера контента)');
+             alert('Экран "Доходы" временно не реализован.');
         });
         
         // Делаем таб "Вся аналитика" активным по умолчанию
         document.getElementById('allAnalyticsTab').classList.add('active');
-
+        
+        // --- ЛОГИКА НИЖНЕЙ НАВИГАЦИИ (для имитации) ---
+        // Переход с "Истории" на "Главный"
+        document.querySelector('.bottom-nav .nav-item:first-child').addEventListener('click', () => {
+             window.location.href = 'main_bank_screen.html'; 
+        });
     });
 </script>
 </body>
