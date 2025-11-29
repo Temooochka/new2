@@ -134,9 +134,9 @@
             font-weight: 600;
         }
 
-        .icon-child { background-color: #801818; } /* Темно-красный */
-        .icon-mother { background-color: #C02929; } /* Средне-красный */
-        .icon-father { background-color: #EE3124; } /* Альфа-красный */
+        .icon-child { background-color: #801818; } 
+        .icon-mother { background-color: #C02929; } 
+        .icon-father { background-color: #EE3124; } 
         .icon-plus { 
             background-color: #f0f0f0; 
             color: #555;
@@ -321,12 +321,32 @@
         const modalSave = document.getElementById('modalSave');
         const modalCancel = document.getElementById('modalCancel');
         const memberItems = document.querySelectorAll('.setting-item');
-        const memberNames = {
-            'child': document.getElementById('nameChild'),
-            'mother': document.getElementById('nameMother'),
-            'father': document.getElementById('nameFather')
+        
+        // Объект для хранения ссылок на элементы имен и дефолтных значений
+        const memberData = {
+            'child': { element: document.getElementById('nameChild'), default: 'Ребенок', icon: 'Р' },
+            'mother': { element: document.getElementById('nameMother'), default: 'Мама', icon: 'М' },
+            'father': { element: document.getElementById('nameFather'), default: 'Папа', icon: 'П' }
         };
+
         let currentMemberId = null;
+
+        // --- Функция: Загрузка имен из localStorage при загрузке страницы ---
+        const loadNames = () => {
+            for (const id in memberData) {
+                // Пытаемся получить имя из localStorage, иначе используем дефолтное
+                const storedName = localStorage.getItem(`member_name_${id}`);
+                const nameToDisplay = storedName || memberData[id].default;
+                
+                memberData[id].element.textContent = nameToDisplay;
+                
+                // Обновление иконки
+                const iconElement = memberData[id].element.closest('.item-info').querySelector('.member-icon');
+                iconElement.textContent = nameToDisplay.charAt(0).toUpperCase();
+            }
+        };
+        
+        loadNames(); // Загружаем имена при старте
 
         // 1. Навигация назад
         backButton.addEventListener('click', () => {
@@ -337,9 +357,8 @@
         memberItems.forEach(item => {
             item.addEventListener('click', () => {
                 currentMemberId = item.getAttribute('data-member');
-                const currentName = memberNames[currentMemberId].textContent;
+                const currentName = memberData[currentMemberId].element.textContent;
                 
-                // Устанавливаем текущее имя в поле ввода
                 modalInput.value = currentName;
                 renameModal.style.display = 'block';
                 modalInput.focus();
@@ -351,28 +370,27 @@
             renameModal.style.display = 'none';
         });
 
-        // Закрытие при клике вне модального окна
         window.addEventListener('click', (event) => {
             if (event.target == renameModal) {
                 renameModal.style.display = 'none';
             }
         });
 
-        // 4. Логика сохранения
+        // 4. --- ЛОГИКА СОХРАНЕНИЯ В LOCALSTORAGE ---
         modalSave.addEventListener('click', () => {
             const newName = modalInput.value.trim();
 
             if (newName && currentMemberId) {
-                const nameElement = memberNames[currentMemberId];
+                // 1. Сохраняем новое имя в localStorage
+                localStorage.setItem(`member_name_${currentMemberId}`, newName);
+                
+                // 2. Обновляем DOM на текущей странице (settings_family.html)
+                const nameElement = memberData[currentMemberId].element;
                 const iconElement = nameElement.closest('.item-info').querySelector('.member-icon');
                 
-                // Обновляем имя
                 nameElement.textContent = newName;
-                
-                // Обновляем первую букву в иконке
                 iconElement.textContent = newName.charAt(0).toUpperCase();
 
-                // Имитация сохранения
                 alert(`Имя успешно изменено на: ${newName}`);
             }
 
