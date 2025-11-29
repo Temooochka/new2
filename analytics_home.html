@@ -196,7 +196,10 @@
             font-size: 16px;
             line-height: 1.2;
             font-weight: 500;
-            cursor: pointer; /* Делаем легенду кликабельной */
+            cursor: pointer; 
+        }
+        .legend-item b {
+            font-weight: 600;
         }
         .color-swatch {
             display: inline-block;
@@ -241,7 +244,7 @@
             color: white;
         }
         
-        /* BOTTOM NAV - Копируем из main_bank_screen.html */
+        /* BOTTOM NAV */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -346,9 +349,9 @@
             
             <div class="chart-footer">
                 <ul class="legend">
-                    <li class="legend-item" data-segment-id="member_child"><span class="color-swatch c1"></span>Ребенок</li>
-                    <li class="legend-item" data-segment-id="member_mother"><span class="color-swatch c2"></span>Мама</li>
-                    <li class="legend-item" data-segment-id="member_father"><span class="color-swatch c3"></span>Папа</li>
+                    <li class="legend-item" data-segment-id="member_child"><span class="color-swatch c1"></span>Ребенок: **30 000 ₽**</li>
+                    <li class="legend-item" data-segment-id="member_mother"><span class="color-swatch c2"></span>Мама: **52 500 ₽**</li>
+                    <li class="legend-item" data-segment-id="member_father"><span class="color-swatch c3"></span>Папа: **67 500 ₽**</li>
                 </ul>
 
                 <div class="actions">
@@ -399,22 +402,33 @@
         
         // Карта сегментов диаграммы и их целей (ID элемента в details_expenses.html)
         const segmentTargets = {
-            0: 'member_child',  // Ребенок (индекс 0)
-            1: 'member_mother', // Мама (индекс 1)
-            2: 'member_father'  // Папа (индекс 2)
+            0: 'member_child',  // Индекс 0
+            1: 'member_mother', // Индекс 1
+            2: 'member_father'  // Индекс 2
         };
         
+        // --- Функция: Загрузка имен из localStorage ---
+        const getMemberName = (id, defaultName) => {
+            // Пытаемся получить сохраненное имя, иначе возвращаем дефолтное
+            return localStorage.getItem(`member_name_${id}`) || defaultName;
+        };
+
+        const childName = getMemberName('child', 'Ребенок');
+        const motherName = getMemberName('mother', 'Мама');
+        const fatherName = getMemberName('father', 'Папа');
+
         // --- ЛОГИКА ГРАФИКА (с анимацией и кликом) ---
         const ctx = document.getElementById('expenseChart').getContext('2d');
         const expenseChart = new Chart(ctx, {
             type: 'doughnut', 
             data: {
-                labels: ['Ребенок', 'Мама', 'Папа'], 
+                // Используем динамические имена, загруженные из localStorage
+                labels: [childName, motherName, fatherName], 
                 datasets: [{
-                    data: [20, 35, 45], 
+                    data: [20, 35, 45], // Процентное соотношение расходов
                     backgroundColor: ['#801818', '#C02929', '#EE3124'],
                     borderWidth: 0,
-                    hoverOffset: 10 // Сектор выдвигается на 10px при наведении
+                    hoverOffset: 10
                 }]
             },
             options: {
@@ -430,7 +444,6 @@
                     animateScale: true,
                     duration: 1000
                 },
-                // *** Обработка клика по сегменту диаграммы ***
                 onClick: (e, elements) => {
                     if (elements.length > 0) {
                         const clickedElement = elements[0];
@@ -444,9 +457,25 @@
                 }
             }
         });
+        
+        // --- Обновление HTML легенды (динамические имена и жирность сумм) ---
+        const updateHTMLLegend = () => {
+            // Имя: **Сумма ₽**
+            document.querySelector('[data-segment-id="member_child"]').innerHTML = 
+                `<span class="color-swatch c1"></span>${childName}: <b>30 000 ₽</b>`;
+            
+            document.querySelector('[data-segment-id="member_mother"]').innerHTML = 
+                `<span class="color-swatch c2"></span>${motherName}: <b>52 500 ₽</b>`;
+            
+            document.querySelector('[data-segment-id="member_father"]').innerHTML = 
+                `<span class="color-swatch c3"></span>${fatherName}: <b>67 500 ₽</b>`;
+        };
+        
+        updateHTMLLegend();
+
 
         // --- ЛОГИКА ПЕРЕХОДОВ ---
-
+        
         // Функция перехода на детализацию с якорем
         const navigateToDetails = (targetId) => {
             window.location.href = `details_expenses.html?scrollTo=${targetId}`;
@@ -467,17 +496,17 @@
         
         // 3. Переход на настройки семьи (Иконка Карандаша)
         document.getElementById('navToRename').addEventListener('click', () => {
-            window.location.href = 'settings_family.html'; // Новый файл
+            window.location.href = 'settings_family.html'; 
         });
         
-        // 4. Переход на Импорт данных (Иконка Загрузки)
+        // 4. Переход на Импорт данных (Иконка Загрузки) - ЗАКЛЮЧИТЕЛЬНАЯ ЗАГЛУШКА
         document.getElementById('navToImport').addEventListener('click', () => {
-            window.location.href = 'import_data.html'; // Новый файл
+            alert('Переход на: import_data.html'); 
         });
 
-        // 5. Переход на Рекомендации ИИ (Кнопка Альфа-ИИ)
+        // 5. Переход на Рекомендации ИИ (Кнопка Альфа-ИИ) - ИСПРАВЛЕНО
         const navToRecommendations = () => {
-            window.location.href = 'ai_recommendations.html'; // Новый файл
+            window.location.href = 'ai_recommendations.html'; 
         };
         document.getElementById('navToRecommendationsButton').addEventListener('click', navToRecommendations);
         document.getElementById('navToRecommendationsCard').addEventListener('click', navToRecommendations);
@@ -487,7 +516,7 @@
             window.location.href = 'details_expenses.html'; 
         });
 
-        // 7. Обработка клика по легенде (повторяет логику клика по сегменту)
+        // 7. Обработка клика по легенде 
         document.querySelectorAll('.legend-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 const targetId = e.currentTarget.getAttribute('data-segment-id');
@@ -507,7 +536,6 @@
              alert('Экран "Доходы" временно не реализован.');
         });
         
-        // Делаем таб "Вся аналитика" активным по умолчанию
         document.getElementById('allAnalyticsTab').classList.add('active');
     });
 </script>
