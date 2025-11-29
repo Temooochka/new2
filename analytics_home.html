@@ -5,9 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вся аналитика</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        // app_data.js (Встроен для простоты)
+        const DEFAULT_FAMILY_MEMBERS = [
+            { id: 'child', defaultRole: 'Ребенок', currentName: 'Ребенок', roleStatus: 'Зависимый профиль', icon: 'child', editable: true, removable: true },
+            { id: 'parent2', defaultRole: 'Мама', currentName: 'Мама', roleStatus: 'Пользователь', icon: 'female', editable: true, removable: false },
+            { id: 'parent1', defaultRole: 'Папа', currentName: 'Папа', roleStatus: 'Основной пользователь', icon: 'male', editable: true, removable: false }
+        ];
 
+        function getFamilyMembers() {
+            try {
+                const storedData = localStorage.getItem('familyMembers');
+                if (storedData) {
+                    return JSON.parse(storedData);
+                }
+            } catch (e) {
+                console.error("Ошибка при чтении localStorage", e);
+            }
+            localStorage.setItem('familyMembers', JSON.stringify(DEFAULT_FAMILY_MEMBERS));
+            return DEFAULT_FAMILY_MEMBERS;
+        }
+
+        function getMemberNameById(id) {
+            const members = getFamilyMembers();
+            const member = members.find(m => m.id === id);
+            return member ? member.currentName : 'Неизвестный';
+        }
+    </script>
     <style>
-        /* (Сокращенные стили) */
+        /* (Стили скопированы из предоставленного вами analytics_home.html, с небольшими корректировками для динамики) */
         body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -20,12 +46,15 @@
             --alfa-red: #EE3124;
             --text-color: #333;
             --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            /* Цвета для диаграммы */
-            --chart-color-1: #95201A;
-            --chart-color-2: #D12D22;
-            --chart-color-3: #EE3124;
-            --chart-color-4: #F56B61;
+            /* Цвета для диаграммы - используем те, что на скриншоте */
+            --chart-color-1: #95201A; /* Dark Red - Ребенок */
+            --chart-color-2: #D12D22; /* Medium Red - Родитель #1 / Лера */
+            --chart-color-3: #EE3124; /* Alfa Red - Родитель #2 / Олег */
+            /* Дополнительные цвета для динамических членов */
+            --chart-color-4: #F56B61; 
             --chart-color-5: #F9A8A3;
+            --chart-color-6: #FFD700; /* Gold */
+            --chart-color-7: #4CAF50; /* Green */
         }
 
         .app-screen {
@@ -35,7 +64,7 @@
             min-height: 100vh;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             position: relative;
-            padding-bottom: 80px;
+            padding-bottom: 80px; /* Для нижнего навигатора */
         }
 
         .top-bar {
@@ -132,9 +161,13 @@
             width: 250px;
             height: 250px;
             border-radius: 50%;
-            /* Заглушка, будет перезаписано JS */
-            background: conic-gradient(var(--chart-color-3) 0% 100%);
-            margin: 10px 0 20px 0;
+            /* Заглушка, будет перезаписано JS для динамической круговой диаграммы */
+            background: conic-gradient(
+                var(--chart-color-1) 0% 20%, 
+                var(--chart-color-2) 20% 55%, 
+                var(--chart-color-3) 55% 100%
+            );
+            margin: 10px auto 20px auto; /* Центрируем */
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
             position: relative;
         }
@@ -180,6 +213,111 @@
         .legend-amount {
             font-weight: 700;
             color: var(--alfa-red);
+        }
+
+        .chart-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+        .chart-action-btn {
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #888;
+            font-size: 20px;
+            margin-left: 15px;
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 390px;
+            width: 100%;
+            height: 70px;
+            background-color: white;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 5px;
+            font-size: 11px;
+            color: #888;
+            z-index: 20;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        .nav-item.active {
+            color: var(--alfa-red);
+        }
+        
+        .ai-card-background {
+            background: linear-gradient(135deg, #F95349, #F5A800); 
+            padding: 20px; 
+            border-radius: 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .ai-card-text {
+            color: white;
+        }
+        .ai-card-text h3 {
+            margin: 0; 
+            font-size: 18px;
+        }
+        .ai-card-text p {
+            margin: 5px 0 0; 
+            font-size: 14px;
+        }
+        .ai-card-button {
+            background-color: white; 
+            color: #F56B61; 
+            padding: 10px 15px; 
+            border-radius: 10px; 
+            font-size: 16px; 
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .import-card-background {
+            background: linear-gradient(135deg, #007BFF, #00C6FF); 
+            padding: 15px; 
+            border-radius: 12px; 
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .import-card-text {
+            color: white;
+        }
+        .import-card-text h3 {
+            font-size: 16px; 
+            margin: 0;
+        }
+        .import-card-text p {
+            font-size: 12px; 
+            margin: 2px 0 0;
+        }
+        .import-card-button {
+            background-color: white; 
+            color: #007BFF; 
+            padding: 8px 12px; 
+            font-size: 14px; 
+            border-radius: 8px;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -259,12 +397,12 @@
                     <i class="fas fa-arrow-right"></i>
                 </div>
             </div>
-            <div class="ai-card-background" style="background: linear-gradient(135deg, #F95349, #F5A800); padding: 20px; border-radius: 15px;">
-                <div class="ai-card-text" style="color: white;">
+            <div class="ai-card-background">
+                <div class="ai-card-text">
                     <h3>Альфа-ИИ</h3>
                     <p>Задать свой вопрос ИИ &rarr;</p>
                 </div>
-                <div class="ai-card-button" style="background-color: white; color: #F56B61; padding: 10px 15px; border-radius: 10px; font-size: 16px; font-weight: 700;">
+                <div class="ai-card-button">
                     Альфа-ИИ 
                     <i class="fas fa-plus"></i>
                 </div>
@@ -281,12 +419,12 @@
                     <i class="fas fa-arrow-right"></i>
                 </div>
             </div>
-            <div class="ai-card-background" style="background: linear-gradient(135deg, #007BFF, #00C6FF); padding: 15px; border-radius: 12px; cursor: pointer;">
-                <div class="ai-card-text" style="color: white;">
-                    <h3 style="font-size: 16px;">Перенести данные о расходах</h3>
-                    <p style="font-size: 12px;">Счета других банков, CSV или API</p>
+            <div class="import-card-background">
+                <div class="import-card-text">
+                    <h3>Перенести данные о расходах</h3>
+                    <p>Счета других банков, CSV или API</p>
                 </div>
-                <div class="ai-card-button" style="background-color: white; color: #007BFF; padding: 8px 12px; font-size: 14px;">
+                <div class="import-card-button">
                     Начать <i class="fas fa-exchange-alt"></i>
                 </div>
             </div>
@@ -294,142 +432,19 @@
         
     </main>
 
-    <nav class="bottom-nav" style="position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); max-width: 390px; width: 100%; height: 70px; background-color: white; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05); display: flex; justify-content: space-around; align-items: center; padding-bottom: 5px; font-size: 11px; color: #888; z-index: 20;">
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
-            <i class="fas fa-home" style="font-size: 22px; margin-bottom: 4px;"></i>
+    <nav class="bottom-nav">
+        <div class="nav-item">
+            <i class="fas fa-home"></i>
             <span>Главный</span>
         </div>
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
-            <i class="fas fa-credit-card" style="font-size: 22px; margin-bottom: 4px;"></i>
+        <div class="nav-item">
+            <i class="fas fa-credit-card"></i>
             <span>Платежи</span>
         </div>
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
-            <i class="fas fa-heart" style="font-size: 22px; margin-bottom: 4px;"></i>
+        <div class="nav-item">
+            <i class="fas fa-heart"></i>
             <span>Выгода</span>
         </div>
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500; color: var(--alfa-red);">
-            <i class="fas fa-history" style="font-size: 22px; margin-bottom: 4px;"></i>
+        <div class="nav-item active">
+            <i class="fas fa-history"></i>
             <span>История</span>
-        </div>
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
-            <i class="fas fa-comment-dots" style="font-size: 22px; margin-bottom: 4px;"></i>
-            <span>Чаты</span>
-        </div>
-    </nav>
-</div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const expenseLegend = document.getElementById('expenseLegend');
-        const expenseChart = document.getElementById('expenseChart');
-        
-        // --- LOCAL STORAGE MANAGEMENT ---
-        const DEFAULT_MEMBERS_CONFIG = [
-            { id: 'father', name: 'Папа', icon: 'male', role: 'Основной пользователь', type: 'main', editable: true, removable: false },
-            { id: 'mother', name: 'Мама', icon: 'female', role: 'Пользователь', type: 'user', editable: true, removable: false },
-            { id: 'child', name: 'Ребенок', icon: 'child', role: 'Зависимый профиль', type: 'dependent', editable: true, removable: true }
-        ];
-
-        function getFamilyMembers() {
-            const membersJson = localStorage.getItem('family_members');
-            if (membersJson) {
-                return JSON.parse(membersJson);
-            }
-            // Инициализация при первом запуске, если нет данных
-            localStorage.setItem('family_members', JSON.stringify(DEFAULT_MEMBERS_CONFIG));
-            return DEFAULT_MEMBERS_CONFIG;
-        }
-
-        // --- CHART LEGEND LOGIC ---
-        const CHART_COLORS = [
-            'var(--chart-color-1)', // 0: Dark Red (Ребенок)
-            'var(--chart-color-2)', // 1: Medium Red (Мама)
-            'var(--chart-color-3)', // 2: Alfa Red (Папа)
-            'var(--chart-color-4)', // 3: Light Red (Dynamic 1)
-            'var(--chart-color-5)', // 4: Pink (Dynamic 2)
-            '#FFD700',              // 5: Gold
-            '#4CAF50'               // 6: Green
-        ];
-
-        // Условные данные для диаграммы (для демонстрации)
-        const PLACEHOLDER_DATA = {
-            father: { amount: '67 500 ₽', percentage: 45 },
-            mother: { amount: '52 500 ₽', percentage: 35 },
-            child: { amount: '30 000 ₽', percentage: 20 },
-            dynamic: { amount: '10 000 ₽', percentage: 10 } // Заглушка для новых членов
-        };
-
-        function renderExpenseLegend() {
-            const members = getFamilyMembers();
-            expenseLegend.innerHTML = ''; // Очистка легенды
-            
-            let conicGradient = '';
-            let currentPercentage = 0;
-            
-            members.forEach((member, index) => {
-                const name = member.name;
-                const color = CHART_COLORS[index % CHART_COLORS.length]; // Цикличность цветов
-                
-                // Используем заглушку, но пытаемся найти по ID
-                const data = PLACEHOLDER_DATA[member.id] || PLACEHOLDER_DATA['dynamic'];
-                
-                const percentage = data.percentage || 0;
-                const amount = data.amount || 'N/A';
-                
-                // Создание градиента для диаграммы
-                conicGradient += `${color} ${currentPercentage}% ${currentPercentage + percentage}%, `;
-                currentPercentage += percentage;
-                
-                // Создание элемента легенды
-                const listItem = document.createElement('li');
-                listItem.className = 'legend-item';
-                listItem.innerHTML = `
-                    <span class="legend-name">
-                        <span class="legend-dot" style="background-color: ${color};"></span>
-                        ${name}:
-                    </span>
-                    <span class="legend-amount">**${amount}**</span>
-                `;
-                expenseLegend.appendChild(listItem);
-            });
-            
-            // Обновление диаграммы
-            conicGradient = conicGradient.trim().replace(/,\s*$/, '');
-            if (conicGradient) {
-                 expenseChart.style.background = `conic-gradient(${conicGradient})`;
-            }
-        }
-        
-        // --- ИНИЦИАЛИЗАЦИЯ И НАВИГАЦИЯ ---
-        renderExpenseLegend();
-
-        document.getElementById('navToExpenses').addEventListener('click', () => {
-            window.location.href = 'details_expenses.html'; 
-        });
-        document.getElementById('navToIncome').addEventListener('click', () => {
-            window.location.href = 'details_income.html'; 
-        });
-        document.getElementById('navToSettingsFamily').addEventListener('click', () => {
-            window.location.href = 'settings_family.html'; 
-        });
-        document.getElementById('navToDetailsExpenses').addEventListener('click', () => {
-            window.location.href = 'details_expenses.html'; 
-        });
-        document.getElementById('navToAiRecommendations').addEventListener('click', () => {
-            alert('Переход на Рекомендации ИИ');
-            // window.location.href = 'ai_recommendations.html';
-        });
-        document.getElementById('editChartLegend').addEventListener('click', () => {
-            window.location.href = 'settings_family.html';
-        });
-        document.getElementById('exportChart').addEventListener('click', () => {
-            alert('Данные экспортированы в формате CSV.');
-        });
-        document.getElementById('navToImportData').addEventListener('click', () => {
-            alert('Переход на Импорт данных');
-            // window.location.href = 'import_data.html';
-        });
-    });
-</script>
-</body>
-</html>
