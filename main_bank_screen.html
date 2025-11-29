@@ -20,7 +20,7 @@
             --alfa-red: #EE3124;
             --bg-light-gray: #F7F7F7;
             --text-color: #333;
-            --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .app-screen {
@@ -30,7 +30,8 @@
             min-height: 100vh;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             position: relative;
-            padding-bottom: 80px; /* Отступ для нижнего меню */
+            padding-bottom: 80px; 
+            overflow-x: hidden;
         }
 
         /* TOP BAR */
@@ -52,9 +53,13 @@
             text-align: center;
             padding-top: 10px;
         }
-        .alfa-logo img {
-            width: 80px;
-            height: auto;
+        .alfa-logo span {
+            background-color: var(--alfa-red);
+            color: white;
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-weight: 700;
         }
         
         .profile-section {
@@ -64,72 +69,93 @@
             cursor: pointer;
         }
         .profile-icon {
-            width: 40px;
-            height: 40px;
-            background-color: #ccc;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            margin-right: 10px;
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 12px;
+            color: #666;
+            font-size: 24px;
         }
         .profile-name {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
+        }
+        .profile-name i {
+            font-size: 14px;
+            color: #666;
+            margin-left: 5px;
         }
 
         /* CARDS */
-        .card {
-            background-color: var(--bg-light-gray);
-            border-radius: 15px;
-            padding: 15px 20px;
-            margin: 0 20px 15px 20px;
-            box-shadow: var(--card-shadow);
-        }
         .account-card, .credit-card {
             background-color: white;
             border-radius: 20px;
             padding: 20px;
             margin: 0 20px 15px 20px;
-            box-shadow: none;
+            box-shadow: var(--card-shadow);
             border: 1px solid #eee;
         }
-        .card-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: var(--text-color);
-        }
-
+        
         /* ACCOUNT CARD */
-        .account-details h3 {
-            font-size: 24px;
-            font-weight: 700;
-            margin: 0 0 10px 0;
+        .account-details {
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+        .account-details h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
         }
         .alfa-card-badge {
             background-color: var(--alfa-red);
             color: white;
             padding: 5px 8px;
-            border-radius: 5px;
-            font-size: 12px;
-            font-weight: 600;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        .alfa-card-badge span {
+            margin-right: 5px;
+        }
+        .alfa-card-badge .mir {
+            font-size: 8px;
+            margin-left: 3px;
         }
         .cashback-link {
+            background-color: var(--bg-light-gray);
+            border-radius: 12px;
+            padding: 10px;
             font-size: 14px;
-            color: #666;
+            font-weight: 500;
+            margin-top: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 10px;
             cursor: pointer;
         }
-
+        
         /* CREDIT CARD */
+        .credit-details {
+            font-size: 14px;
+            color: #666;
+        }
         .credit-details h3 {
             font-size: 16px;
             font-weight: 600;
             margin: 0 0 5px 0;
+            color: #333;
+        }
+        .credit-details p {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 5px 0 10px 0;
         }
         .credit-payment {
             background-color: var(--bg-light-gray);
@@ -137,14 +163,13 @@
             padding: 10px;
             font-size: 14px;
             font-weight: 500;
-            margin: 10px 0;
         }
 
         /* OFFER CARD (Ипотека) */
         .offer-card {
             background-color: var(--bg-light-gray);
             border-radius: 20px;
-            padding: 20px;
+            padding: 15px 20px;
             margin: 0 20px 20px 20px;
             display: flex;
             justify-content: space-between;
@@ -152,11 +177,21 @@
         }
         .offer-card p {
             font-size: 14px;
+            font-weight: 500;
             margin: 0;
             padding-right: 15px;
         }
         .offer-card i {
+            color: #666;
             cursor: pointer;
+        }
+
+        /* SCROLL INDICATOR */
+        .scroll-down {
+            text-align: center;
+            color: #ccc;
+            margin: 10px 0 20px 0;
+            font-size: 20px;
         }
 
         /* SEARCH & GRID */
@@ -164,25 +199,228 @@
             padding: 0 20px 20px 20px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
         }
         .search-bar {
             flex-grow: 1;
             background-color: var(--bg-light-gray);
-            border-radius: 15px;
-            padding: 12px 15px;
+            border-radius: 20px;
+            padding: 10px 15px;
             font-size: 16px;
             color: #666;
             display: flex;
             align-items: center;
         }
         .search-bar i {
-            margin-right: 10px;
+            margin-right: 8px;
         }
         .grid-icon {
-            font-size: 20px;
-            color: #666;
+            font-size: 24px;
+            color: var(--text-color);
             cursor: pointer;
+        }
+
+        /* HORIZONTAL WIDGETS */
+        .horizontal-widgets {
+            padding-left: 20px;
+            margin-bottom: 20px;
+            overflow-x: scroll;
+            display: flex;
+            gap: 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .horizontal-widgets::-webkit-scrollbar {
+            display: none;
+        }
+        .widget-item {
+            width: 140px; 
+            flex-shrink: 0;
+            background-color: var(--bg-light-gray);
+            border-radius: 15px;
+            padding: 15px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-color);
+            line-height: 1.3;
+        }
+        /* Имитация изображений в виджетах */
+        .widget-item-image {
+            height: 80px;
+            background: linear-gradient(135deg, #EE3124, #F06E66);
+            border-radius: 10px 10px 0 0;
+            margin: -15px -15px 10px -15px;
+            text-align: center;
+            color: white;
+            padding-top: 10px;
+            font-size: 12px;
+        }
+
+        /* CONTACTS */
+        .contacts {
+            padding: 0 20px 20px 20px;
+            overflow-x: scroll;
+            display: flex;
+            gap: 15px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .contacts::-webkit-scrollbar {
+            display: none;
+        }
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 70px;
+            flex-shrink: 0;
+        }
+        .contact-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 600;
+            font-size: 16px;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+        .contact-name {
+            font-size: 12px;
+            line-height: 1.2;
+        }
+
+        /* SECTIONS (Переводы, Кэшбэк, Шаблоны) */
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            padding: 0 20px;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-title i {
+            font-size: 16px;
+            color: #666;
+        }
+
+        /* CASHBACK GRID */
+        .cashback-grid {
+            padding: 0 20px;
+            margin-bottom: 20px;
+            display: flex;
+            overflow-x: scroll;
+            gap: 15px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .cashback-grid::-webkit-scrollbar {
+            display: none;
+        }
+        .cashback-item {
+            width: 70px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+        .cashback-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background-color: var(--bg-light-gray);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin: 0 auto 5px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .cashback-icon img {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+        .cashback-text {
+            font-size: 10px;
+            line-height: 1.2;
+        }
+        .cashback-text span {
+            display: block;
+            font-size: 9px;
+            color: var(--alfa-red);
+            font-weight: 600;
+        }
+
+        /* ALFA ADVANTAGE CARDS */
+        .alfa-advantage {
+            padding: 0 20px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            overflow-x: scroll;
+            -webkit-overflow-scrolling: touch;
+        }
+        .alfa-advantage::-webkit-scrollbar {
+            display: none;
+        }
+        .advantage-card {
+            width: 150px;
+            height: 100px;
+            flex-shrink: 0;
+            border-radius: 15px;
+            padding: 15px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .card-red {
+            background: linear-gradient(135deg, #EE3124, #C70039);
+        }
+        .card-purple {
+            background: linear-gradient(135deg, #8A2BE2, #6A0DAD);
+        }
+        .advantage-card h4 {
+            margin: 0;
+        }
+        .advantage-card p {
+            font-size: 12px;
+            font-weight: 400;
+            margin-top: 5px;
+        }
+
+        /* BUTTONS */
+        .open-product-button {
+            display: block;
+            width: calc(100% - 40px);
+            margin: 0 auto 30px auto;
+            background-color: var(--bg-light-gray);
+            border: none;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        /* SETTINGS LINK */
+        .settings-main-screen {
+            text-align: center;
+            padding: 0 0 20px 0;
+            cursor: pointer;
+            color: #666;
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        .settings-main-screen i {
+            font-size: 22px;
+            color: #666;
         }
 
         /* BOTTOM NAV */
@@ -254,44 +492,49 @@
 
     <header class="header">
         <div class="alfa-logo">
-            <span style="font-size: 12px; color: var(--alfa-red); font-weight: 600;">МГУ · АЛЬФА</span>
+            <span>МГУ · АЛЬФА</span>
         </div>
         
         <div class="profile-section">
-            <div class="profile-icon"></div>
+            <div class="profile-icon"><i class="fas fa-user"></i></div>
             <span class="profile-name">Дмитрий</span>
-            <i class="fas fa-chevron-right" style="font-size: 14px; margin-left: auto; color: #ccc;"></i>
+            <i class="fas fa-chevron-right" style="margin-left: auto;"></i>
         </div>
     </header>
 
     <main class="content-area">
         <div class="account-card">
+            <p style="font-size: 14px; color: #666; margin: 0 0 5px 0;">Счёт Альфа-карты</p>
             <div class="account-details">
-                <p style="font-size: 14px; color: #666; margin: 0;">Счёт Альфа-карты</p>
-                <h3>
-                    60 000,00 ₽
-                    <span class="alfa-card-badge">А 0504 МИР</span>
-                </h3>
+                <h3>60 000,00 ₽</h3>
+                <div class="alfa-card-badge">
+                    <span>0504</span>
+                    <span class="mir">МИР</span>
+                </div>
             </div>
             <div class="cashback-link">
                 Получайте кэшбэк за оплату с Alfa Pay
-                <i class="fas fa-chevron-right"></i>
+                <i class="fas fa-chevron-right" style="font-size: 12px;"></i>
             </div>
         </div>
 
-        <div class="credit-card">
+        <div class="credit-card" style="margin-bottom: 20px;">
             <div class="credit-details">
-                <h3>Кредит</h3>
-                <p style="font-size: 20px; font-weight: 700; margin: 5px 0;">320 000,00 ₽</p>
+                <h3 style="color: #666;">Кредит</h3>
+                <p>320 000,00 ₽</p>
             </div>
             <div class="credit-payment">
-                Платеж 27 декабря **39 000,00 ₽**
+                Платёж 27 декабря **39 000,00 ₽**
             </div>
         </div>
 
         <div class="offer-card">
             <p>Оформите ипотеку в один клик до конца декабря за 4,5% годовых</p>
-            <i class="fas fa-times" style="color: #666;"></i>
+            <i class="fas fa-times"></i>
+        </div>
+        
+        <div class="scroll-down">
+            <i class="fas fa-chevron-down"></i>
         </div>
 
         <div class="search-grid-container">
@@ -301,15 +544,111 @@
             </div>
             <i class="fas fa-th-large grid-icon"></i>
         </div>
-        
-        <div style="padding: 0 20px;">
-            <p style="color: #999; text-align: center;">... Здесь может быть другой контент основного экрана, как на скриншотах ...</p>
+
+        <div class="horizontal-widgets">
+            <div class="widget-item">
+                <div class="widget-item-image">Реклама</div>
+                Новый полис — билет на море
+            </div>
+            <div class="widget-item">
+                <div class="widget-item-image" style="background: linear-gradient(135deg, #1A478C, #3F51B5);">Акция</div>
+                Как не платить проценты по кредитке
+            </div>
+            <div class="widget-item">
+                <div class="widget-item-image" style="background: linear-gradient(135deg, #FFD700, #FFA500);">Скидка</div>
+                Еще один полезный совет
+            </div>
         </div>
 
-        <div style="text-align: center; margin: 20px 0 30px 0;">
-            <i class="fas fa-cog" style="font-size: 16px; color: #666; margin-right: 5px;"></i>
-            <span style="font-size: 14px; color: #666; cursor: pointer;">Настроить главный экран</span>
+        <div class="contacts">
+            <div class="contact-item">
+                <div class="contact-avatar" style="color: #EE3124; background-color: #f7e0e0;">ДМ</div>
+                <div class="contact-name">Дима Матвейчук</div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-avatar" style="color: #8A2BE2; background-color: #f0e0f7;">ПМ</div>
+                <div class="contact-name">Паша Макаров</div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-avatar" style="color: #EE3124; background-color: #f7e0e0;">ЯЛ</div>
+                <div class="contact-name">Яша Лысков</div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-avatar" style="color: #34A853; background-color: #e0f7e0;">КК</div>
+                <div class="contact-name">Кирилл Контарук</div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-avatar">...</div>
+                <div class="contact-name">Все контакты</div>
+            </div>
         </div>
+        
+        <hr style="border: none; border-top: 1px solid #f0f0f0; margin: 10px 0;">
+
+        <div class="section-title">
+            Переводы по номеру
+            <i class="fas fa-chevron-right"></i>
+        </div>
+        
+        <div class="section-title">
+            Кэшбэк от партнёров
+            <i class="fas fa-chevron-right"></i>
+        </div>
+        <div class="cashback-grid">
+            <div class="cashback-item">
+                <div class="cashback-icon"><i class="fas fa-shopping-basket"></i></div>
+                <div class="cashback-text">Перекрест... <span>до 10%</span></div>
+            </div>
+            <div class="cashback-item">
+                <div class="cashback-icon"><i class="fas fa-laptop-code"></i></div>
+                <div class="cashback-text">iPort <span>до 15%</span></div>
+            </div>
+            <div class="cashback-item">
+                <div class="cashback-icon"><i class="fas fa-gem"></i></div>
+                <div class="cashback-text">MIUZ Diam... <span>до 5%</span></div>
+            </div>
+            <div class="cashback-item">
+                <div class="cashback-icon"><i class="fas fa-book"></i></div>
+                <div class="cashback-text">Читай-Гор... <span>5%</span></div>
+            </div>
+            <div class="cashback-item">
+                <div class="cashback-icon"><i class="fas fa-plus"></i></div>
+                <div class="cashback-text">Еще</div>
+            </div>
+        </div>
+        
+        <div class="section-title">
+            Альфа-Выгодно
+        </div>
+        <div class="alfa-advantage">
+            <div class="advantage-card card-red">
+                <h4>Кэшбэк и сервисы</h4>
+                <p>Заработать на покупках</p>
+            </div>
+            <div class="advantage-card card-purple">
+                <h4>Суперкэшбэк до 100%</h4>
+                <p>Получайте лучший кэшбэк</p>
+            </div>
+            <div class="advantage-card" style="background-color: #f0f0f0; color: #333; border: 1px solid #ddd;">
+                <h4 style="color: #666;">Еще выгода</h4>
+                <p style="color: #666;">Больше предложений</p>
+            </div>
+        </div>
+        
+        <div class="section-title">
+            Шаблоны и автоплатежи
+            <i class="fas fa-chevron-right"></i>
+        </div>
+        
+        <button class="open-product-button">
+            Открыть новый продукт
+        </button>
+        
+        <div class="settings-main-screen" id="mainScreenSettingsLink">
+            <i class="fas fa-cog"></i> 
+            Настроить главный экран
+        </div>
+        
     </main>
 
     <nav class="bottom-nav">
@@ -340,10 +679,17 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Устанавливаем переход на экран аналитики (аналитика_дом.html) по кнопке "История"
+        // Настраиваем переход на главный экран аналитики (analytics_home.html) по кнопке "История"
         document.getElementById('navToAnalytics').addEventListener('click', () => {
-             // Имя файла для главного экрана аналитики: analytics_home.html
              window.location.href = 'analytics_home.html'; 
+        });
+        
+        // Дополнительные заглушки
+        document.getElementById('mainScreenSettingsLink').addEventListener('click', () => {
+             alert('Настройка главного экрана: функционал не реализован.');
+        });
+        document.querySelector('.open-product-button').addEventListener('click', () => {
+             alert('Открытие нового продукта: функционал не реализован.');
         });
     });
 </script>
