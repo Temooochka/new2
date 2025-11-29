@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детализация расходов</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-doughnutlabel"></script>
+
+    <style>
+        /* Общие стили */
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+        }
+
+        :root {
+            --alfa-red: #EE3124;
+            --dark-red: #801818; 
+            --medium-red: #C02929;
+            --light-red-1: #E04444; 
+            --light-red-2: #F46F6F;
+            --light-red-3: #F09A9A;
+            --light-orange: #FFD700;
+            
+            --bg-light-gray: #F7F7F7;
+            --text-color: #333;
+            --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .app-screen {
+            width: 100%;
+            max-width: 390px;
+            background-color: white;
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+
+        /* TOP BAR */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 25px 8px 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* HEADER */
+        .header-nav {
+            padding: 0 20px;
+        }
+
+        .back-settings {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 15px;
+            font-size: 18px;
+            color: var(--text-color);
+        }
+        .settings-icon {
+            transform: rotate(90deg);
+            cursor: pointer;
+        }
+        .back-arrow {
+            cursor: pointer;
+        }
+
+        .month-selector {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+        }
+        .month-selector h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+        .tab {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 18px;
+            background-color: #f0f0f0;
+            color: var(--text-color);
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .tab.active {
+            background-color: #000;
+            color: white;
+        }
+
+        /* CONTENT & CARDS */
+        .content {
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .member-card {
+            background-color: var(--bg-light-gray);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            padding: 20px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .member-info {
+            flex-grow: 1;
+        }
+
+        .member-info h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .member-info .color-indicator {
+             display: inline-block;
+             width: 12px;
+             height: 12px;
+             border-radius: 50%;
+             margin-right: 10px;
+        }
+
+        .chart-container {
+            width: 120px; 
+            height: 120px;
+            min-width: 120px;
+            margin-right: 20px;
+        }
+
+        .legend {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .category-name {
+            display: flex;
+            align-items: center;
+        }
+
+        .category-swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .percentage {
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        /* Стили для цветов категорий - имитация разнообразия красного */
+        .color-1 { background-color: var(--dark-red); }
+        .color-2 { background-color: var(--medium-red); }
+        .color-3 { background-color: var(--light-red-1); }
+        .color-4 { background-color: var(--light-red-2); }
+        .color-5 { background-color: var(--light-orange); }
+
+        /* BOTTOM NAV - Копируем из analytics_home.html */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 390px;
+            height: 70px;
+            background-color: white;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 5px; 
+            font-size: 11px;
+            color: #888;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+        }
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        .badge {
+            position: absolute;
+            top: 0px; 
+            right: 50%;
+            transform: translateX(120%);
+            background-color: var(--alfa-red);
+            color: white;
+            border-radius: 50%;
+            font-size: 10px;
+            width: 15px;
+            height: 15px;
+            line-height: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        /* Кнопка "История" активна на этом экране */
+        .nav-item:nth-child(4) i, .nav-item:nth-child(4) span { 
+            color: var(--alfa-red);
+        }
+
+        /* Scroll-to target padding */
+        .scroll-target {
+            scroll-margin-top: 100px; /* Чтобы заголовок не скрывался под верхним баром */
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="app-screen">
+    
+    <div class="top-bar">
+        <span>9:41</span>
+        <div class="status-icons">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-three-quarters"></i>
+        </div>
+    </div>
+
+    <header class="header-nav">
+        <div class="back-settings">
+            <i class="fas fa-chevron-left back-arrow" id="navToAnalyticsHome"></i>
+            <i class="fas fa-sliders-h settings-icon"></i> 
+        </div>
+        
+        <div class="month-selector">
+            <h1>Октябрь</h1>
+            <div class="arrows">
+                <i class="fas fa-chevron-left disabled-arrow"></i>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" id="expensesTab">Расходы</button>
+            <button class="tab" id="incomeTab">Доходы</button>
+            <button class="tab" id="allAnalyticsTab">Вся аналитика</button>
+        </div>
+    </header>
+
+    <main class="content">
+
+        <h2 class="section-title">Детализация расходов</h2>
+
+        <div class="member-card scroll-target" id="member_child">
+            <div class="chart-container">
+                <canvas id="chartChild"></canvas>
+            </div>
+            <div class="member-info">
+                <h3><span class="color-indicator color-1"></span>Ребенок</h3>
+                <ul class="legend">
+                    <li class="legend-item"><span class="category-name"><span class="category-swatch color-1"></span>Еда</span><span class="percentage">40%</span></li>
+                    <li class="legend-item"><span class="category-name"><span class="category-swatch color-2"></span>Развлечения</span><span class="percentage">30%</span></li>
+                    <li class="legend-item"><span class="category-name"><span class="category-swatch color-3"></span>Транспорт</span><span class="percentage">14%</span></li>
+                    <li class="legend-item"><span class="category-name"><span class="category-swatch color-4"></span>Обучение</span><span class="percentage">10%</span></li>
+                    <li class="legend-item"><span class="category-name"><span class="category-swatch color-5"></span>Прочее</span><span class="percentage">6%</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="member-card scroll-target" id="member_mother">
+            <div class="chart-container">
+                <canvas id="chartMother"></canvas>
+            </div>
+            <div class="member-info">
+                <h3><span class="color-indicator color-2"></span>Мама</h3>
+                <ul class="legend">
+                    <li class="legend-item"><span class="category-name"><span class="category-swatch color-1"></span>Продукты</span><span class="percentage">35%</span></li>
+                    <li class="legend-item"><span class="category-name"><span class="category-swatch color-2"></span>Одежда</span><span class="percentage">25%</span></li>
+                    <li class="legend-item"><span class="category-name"><span class="category-swatch color-3"></span>Красота</span><span class="percentage">20%</span></li>
+                    <li class="legend-item"><span class="category-name"><span class="category-swatch color-4"></span>Дом</span><span class="percentage">10%</span></li>
+                    <li class="legend-item"><span class="category-name"><span class="category-swatch color-5"></span>Прочее</span><span class="percentage">10%</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="member-card scroll-target" id="member_father">
+            <div class="chart-container">
+                <canvas id="chartFather"></canvas>
+            </div>
+            <div class="member-info">
+                <h3><span class="color-indicator color-3"></span>Папа</h3>
+                <ul class="legend">
+                    <li class="legend-item"><span class="category-name"><span class="category-swatch color-1"></span>Авто</span><span class="percentage">45%</span></li>
+                    <li class="legend-item"><span class="category-name"><span class="category-swatch color-2"></span>Связь</span><span class="percentage">25%</span></li>
+                    <li class="legend-item"><span class="category-name"><span class="category-swatch color-3"></span>Еда</span><span class="percentage">15%</span></li>
+                    <li class="legend-item"><span class="category-name"><span class="category-swatch color-4"></span>Развлечения</span><span class="percentage">10%</span></li>
+                    <li class="legend-item"><span class="category-name"><span class="category-swatch color-5"></span>Прочее</span><span class="percentage">5%</span></li>
+                </ul>
+            </div>
+        </div>
+        
+    </main>
+
+    <nav class="bottom-nav">
+        <div class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Главный</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-credit-card"></i>
+            <span class="badge one">1</span>
+            <span>Платежи</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-heart"></i>
+            <span>Выгода</span>
+        </div>
+        <div class="nav-item active-nav">
+            <i class="fas fa-history"></i>
+            <span>История</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-comment-dots"></i>
+            <span class="badge four">4</span>
+            <span>Чаты</span>
+        </div>
+    </nav>
+</div>
+
+<script>
+    const COLORS = ['#801818', '#C02929', '#E04444', '#F46F6F', '#FFD700'];
+
+    function createChart(ctxId, data, labels, total) {
+        new Chart(document.getElementById(ctxId).getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data, 
+                    backgroundColor: COLORS,
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                aspectRatio: 1, 
+                cutout: '70%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: true }
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 1000
+                }
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Данные для графиков (проценты)
+        const childData = [40, 30, 14, 10, 6]; 
+        const childLabels = ['Еда', 'Развлечения', 'Транспорт', 'Обучение', 'Прочее'];
+        createChart('chartChild', childData, childLabels, '100%');
+        
+        const motherData = [35, 25, 20, 10, 10]; 
+        const motherLabels = ['Продукты', 'Одежда', 'Красота', 'Дом', 'Прочее'];
+        createChart('chartMother', motherData, motherLabels, '100%');
+
+        const fatherData = [45, 25, 15, 10, 5]; 
+        const fatherLabels = ['Авто', 'Связь', 'Еда', 'Развлечения', 'Прочее'];
+        createChart('chartFather', fatherData, fatherLabels, '100%');
+        
+        // --- ЛОГИКА ПЕРЕХОДОВ ---
+
+        // Переход на "Вся аналитика"
+        document.getElementById('navToAnalyticsHome').addEventListener('click', () => {
+            window.location.href = 'analytics_home.html'; 
+        });
+
+        // Переход на "Вся аналитика" (через таб)
+        document.getElementById('allAnalyticsTab').addEventListener('click', () => {
+            window.location.href = 'analytics_home.html'; 
+        });
+        
+        // Переход на "Доходы" (через таб)
+        document.getElementById('incomeTab').addEventListener('click', () => {
+            alert('Экран "Доходы" временно не реализован.');
+        });
+        
+        // Переход с "Истории" на "Главный"
+        document.querySelector('.bottom-nav .nav-item:first-child').addEventListener('click', () => {
+             window.location.href = 'main_bank_screen.html'; 
+        });
+        
+        // Обработка якорей, если перешли с analytics_home.html
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetId = urlParams.get('scrollTo');
+        if (targetId) {
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    });
+</script>
+</body>
+</html>
