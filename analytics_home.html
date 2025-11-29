@@ -328,7 +328,7 @@
         <div class="tabs">
             <button class="tab" id="expensesTab">Расходы</button>
             <button class="tab" id="incomeTab">Доходы</button>
-            <button class="tab active" id="allAnalyticsTab">Вся аналитика</button>
+            <button class="tab" id="allAnalyticsTab">Вся аналитика</button>
         </div>
     </header>
 
@@ -349,9 +349,9 @@
             
             <div class="chart-footer">
                 <ul class="legend">
-                    <li class="legend-item" data-segment-id="member_child"><span class="color-swatch c1"></span>Ребенок: **30 000 ₽**</li>
-                    <li class="legend-item" data-segment-id="member_mother"><span class="color-swatch c2"></span>Мама: **52 500 ₽**</li>
-                    <li class="legend-item" data-segment-id="member_father"><span class="color-swatch c3"></span>Папа: **67 500 ₽**</li>
+                    <li class="legend-item" data-segment-id="member_child"><span class="color-swatch c1"></span>Ребенок: <b>30 000 ₽</b></li>
+                    <li class="legend-item" data-segment-id="member_mother"><span class="color-swatch c2"></span>Мама: <b>52 500 ₽</b></li>
+                    <li class="legend-item" data-segment-id="member_father"><span class="color-swatch c3"></span>Папа: <b>67 500 ₽</b></li>
                 </ul>
 
                 <div class="actions">
@@ -402,14 +402,13 @@
         
         // Карта сегментов диаграммы и их целей (ID элемента в details_expenses.html)
         const segmentTargets = {
-            0: 'member_child',  // Индекс 0
-            1: 'member_mother', // Индекс 1
-            2: 'member_father'  // Индекс 2
+            0: 'member_child',  
+            1: 'member_mother', 
+            2: 'member_father'  
         };
         
-        // --- Функция: Загрузка имен из localStorage ---
+        // --- Функция: Загрузка имен из localStorage (для поддержки переименования) ---
         const getMemberName = (id, defaultName) => {
-            // Пытаемся получить сохраненное имя, иначе возвращаем дефолтное
             return localStorage.getItem(`member_name_${id}`) || defaultName;
         };
 
@@ -458,7 +457,7 @@
             }
         });
         
-        // --- Обновление HTML легенды (динамические имена и жирность сумм) ---
+        // --- Обновление HTML легенды ---
         const updateHTMLLegend = () => {
             // Имя: **Сумма ₽**
             document.querySelector('[data-segment-id="member_child"]').innerHTML = 
@@ -499,12 +498,12 @@
             window.location.href = 'settings_family.html'; 
         });
         
-        // 4. Переход на Импорт данных (Иконка Загрузки) - ЗАКЛЮЧИТЕЛЬНАЯ ЗАГЛУШКА
+        // 4. Переход на Импорт данных (Иконка Загрузки)
         document.getElementById('navToImport').addEventListener('click', () => {
             alert('Переход на: import_data.html'); 
         });
 
-        // 5. Переход на Рекомендации ИИ (Кнопка Альфа-ИИ) - ИСПРАВЛЕНО
+        // 5. Переход на Рекомендации ИИ (Кнопка Альфа-ИИ)
         const navToRecommendations = () => {
             window.location.href = 'ai_recommendations.html'; 
         };
@@ -526,17 +525,22 @@
             });
         });
         
-        // 8. Заглушка для иконки "Настройки" и таба "Доходы"
+        // 8. Обработчики табов
+        document.getElementById('allAnalyticsTab').classList.add('active'); // По умолчанию активен
+        
+        // *** ИСПРАВЛЕНИЕ: Переход на Доходы ***
+        document.getElementById('incomeTab').addEventListener('click', () => {
+             // Сначала делаем таб активным (для визуального эффекта)
+             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+             document.getElementById('incomeTab').classList.add('active');
+             // Осуществляем переход
+             window.location.href = 'details_income.html'; 
+        });
+        
+        // Заглушка для иконки "Настройки"
         document.getElementById('navToSettings').addEventListener('click', () => {
             alert('Сортировка/Фильтрация не реализована.');
         });
-        document.getElementById('incomeTab').addEventListener('click', () => {
-             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-             document.getElementById('incomeTab').classList.add('active');
-             alert('Экран "Доходы" временно не реализован.');
-        });
-        
-        document.getElementById('allAnalyticsTab').classList.add('active');
     });
 </script>
 </body>
