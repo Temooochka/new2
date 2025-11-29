@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        /* (Сокращенные стили) */
+        /* Общие стили и переменные */
         body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -19,13 +19,13 @@
         :root {
             --alfa-red: #EE3124;
             --text-color: #333;
+            --light-gray-bg: #f7f7f7;
             --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             /* Цвета для категорий */
             --category-food: #EE3124;
             --category-kid: #F5A800;
             --category-transport: #007BFF;
             --category-other: #6C757D;
-            --category-dynamic: #4CAF50; /* Для динамических членов */
         }
 
         .app-screen {
@@ -38,6 +38,7 @@
             padding-bottom: 80px;
         }
 
+        /* TOP BAR */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -46,11 +47,13 @@
             font-weight: 600;
         }
 
+        /* HEADER */
         .header-nav {
             padding: 0 20px;
             background-color: white;
             padding-bottom: 20px;
         }
+
         .back-title {
             display: flex;
             align-items: center;
@@ -74,6 +77,13 @@
             margin: 0 0 10px 0;
             padding-top: 10px;
         }
+        .header-description {
+            font-size: 15px;
+            color: #666;
+            margin: 0;
+        }
+
+        /* TABS */
         .tabs {
             display: flex;
             gap: 8px;
@@ -90,6 +100,7 @@
             font-size: 14px;
             cursor: pointer;
             font-weight: 500;
+            transition: background-color 0.2s, color 0.2s;
             white-space: nowrap;
         }
         .tab.active {
@@ -97,11 +108,13 @@
             color: white;
         }
 
+        /* CONTENT */
         .content {
             padding: 20px;
             padding-top: 0;
         }
         
+        /* SUMMARY CARD - ОБЩИЕ РАСХОДЫ */
         .summary-card {
             background-color: var(--alfa-red);
             color: white;
@@ -110,7 +123,19 @@
             text-align: center;
             margin-bottom: 20px;
         }
-
+        .summary-card p {
+            font-size: 15px;
+            font-weight: 500;
+            margin: 0;
+            opacity: 0.8;
+        }
+        .summary-card h2 {
+            font-size: 38px;
+            font-weight: 800;
+            margin: 5px 0 0 0;
+        }
+        
+        /* MEMBER CARDS */
         .member-card {
             background-color: white;
             border-radius: 20px;
@@ -138,11 +163,6 @@
             margin-right: 10px;
             font-size: 20px;
         }
-        
-        .member-header.dynamic h3 i {
-            color: var(--category-dynamic); /* Зеленый для динамических */
-        }
-
         .member-amount {
             font-size: 18px;
             font-weight: 700;
@@ -174,12 +194,52 @@
             font-size: 8px;
             margin-right: 8px;
         }
+        .category-item span:last-child {
+            font-weight: 500;
+        }
 
         .category-food i { color: var(--category-food); }
         .category-kid i { color: var(--category-kid); }
         .category-transport i { color: var(--category-transport); }
         .category-other i { color: var(--category-other); }
-        .category-dynamic i { color: var(--category-dynamic); }
+
+        /* BOTTOM NAV - Копируем из main_bank_screen.html */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 390px;
+            height: 70px;
+            background-color: white;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 5px; 
+            font-size: 11px;
+            color: #888;
+            z-index: 20;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+        }
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        
+        /* Кнопка "История" активна на этом экране */
+        .nav-item:nth-child(4) i, .nav-item:nth-child(4) span { 
+            color: var(--alfa-red);
+        }
     </style>
 </head>
 <body>
@@ -215,34 +275,72 @@
         </div>
     </header>
 
-    <main class="content" id="memberCardsContainer">
+    <main class="content">
 
         <div class="summary-card">
             <p>Общие расходы семьи за Октябрь:</p>
             <h2>150 000 ₽</h2>
         </div>
         
-        </main>
+        <div class="member-card" id="member_child">
+            <div class="member-header">
+                <h3><i class="fas fa-child"></i> <span id="childNameDisplay">Ребенок</span></h3>
+                <span class="member-amount">30 000 ₽ (20%)</span>
+            </div>
+            <ul class="category-list">
+                <li class="category-item category-kid"><span><i class="fas fa-circle"></i> Детский сад</span><span>15 000 ₽</span></li>
+                <li class="category-item category-kid"><span><i class="fas fa-circle"></i> Игрушки</span><span>5 000 ₽</span></li>
+                <li class="category-item category-food"><span><i class="fas fa-circle"></i> Питание</span><span>10 000 ₽</span></li>
+            </ul>
+        </div>
+        
+        <div class="member-card" id="member_mother">
+            <div class="member-header">
+                 <h3><i class="fas fa-female"></i> <span id="motherNameDisplay">Мама</span></h3>
+                <span class="member-amount">52 500 ₽ (35%)</span>
+            </div>
+            <ul class="category-list">
+                <li class="category-item category-food"><span><i class="fas fa-circle"></i> Продукты</span><span>25 000 ₽</span></li>
+                <li class="category-item category-transport"><span><i class="fas fa-circle"></i> Такси</span><span>10 000 ₽</span></li>
+                <li class="category-item category-other"><span><i class="fas fa-circle"></i> Одежда</span><span>17 500 ₽</span></li>
+            </ul>
+        </div>
+        
+        <div class="member-card" id="member_father">
+            <div class="member-header">
+                <h3><i class="fas fa-male"></i> <span id="fatherNameDisplay">Папа</span></h3>
+                <span class="member-amount">67 500 ₽ (45%)</span>
+            </div>
+            <ul class="category-list">
+                <li class="category-item category-transport"><span><i class="fas fa-circle"></i> Топливо</span><span>30 000 ₽</span></li>
+                <li class="category-item category-other"><span><i class="fas fa-circle"></i> Подписки</span><span>15 000 ₽</span></li>
+                <li class="category-item category-food"><span><i class="fas fa-circle"></i> Рестораны</span><span>22 500 ₽</span></li>
+            </ul>
+        </div>
+        
+    </main>
 
-    <nav class="bottom-nav" style="position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); max-width: 390px; width: 100%; height: 70px; background-color: white; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05); display: flex; justify-content: space-around; align-items: center; padding-bottom: 5px; font-size: 11px; color: #888; z-index: 20;">
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
-            <i class="fas fa-home" style="font-size: 22px; margin-bottom: 4px;"></i>
+    <nav class="bottom-nav">
+        <div class="nav-item">
+            <i class="fas fa-home"></i>
             <span>Главный</span>
         </div>
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
-            <i class="fas fa-credit-card" style="font-size: 22px; margin-bottom: 4px;"></i>
+        <div class="nav-item">
+            <i class="fas fa-credit-card"></i>
+            <span class="badge one">1</span>
             <span>Платежи</span>
         </div>
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
-            <i class="fas fa-heart" style="font-size: 22px; margin-bottom: 4px;"></i>
+        <div class="nav-item">
+            <i class="fas fa-heart"></i>
             <span>Выгода</span>
         </div>
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500; color: var(--alfa-red);">
-            <i class="fas fa-history" style="font-size: 22px; margin-bottom: 4px;"></i>
+        <div class="nav-item active-nav">
+            <i class="fas fa-history"></i>
             <span>История</span>
         </div>
-        <div class="nav-item" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;">
-            <i class="fas fa-comment-dots" style="font-size: 22px; margin-bottom: 4px;"></i>
+        <div class="nav-item">
+            <i class="fas fa-comment-dots"></i>
+            <span class="badge four">4</span>
             <span>Чаты</span>
         </div>
     </nav>
@@ -250,112 +348,56 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const memberCardsContainer = document.getElementById('memberCardsContainer');
-
-        // --- LOCAL STORAGE MANAGEMENT ---
-        const DEFAULT_MEMBERS_CONFIG = [
-            { id: 'father', name: 'Папа', icon: 'male', role: 'Основной пользователь', type: 'main', editable: true, removable: false },
-            { id: 'mother', name: 'Мама', icon: 'female', role: 'Пользователь', type: 'user', editable: true, removable: false },
-            { id: 'child', name: 'Ребенок', icon: 'child', role: 'Зависимый профиль', type: 'dependent', editable: true, removable: true }
-        ];
-
-        function getFamilyMembers() {
-            const membersJson = localStorage.getItem('family_members');
-            if (membersJson) {
-                return JSON.parse(membersJson);
-            }
-            localStorage.setItem('family_members', JSON.stringify(DEFAULT_MEMBERS_CONFIG));
-            return DEFAULT_MEMBERS_CONFIG;
-        }
-
-        // --- ШАБЛОНЫ КАРТОЧЕК (Условные данные) ---
-        const EXPENSE_TEMPLATES = {
-            'child': {
-                amount: '30 000 ₽ (20%)',
-                categories: [
-                    { name: 'Детский сад', amount: '15 000 ₽', class: 'category-kid' },
-                    { name: 'Игрушки', amount: '5 000 ₽', class: 'category-kid' },
-                    { name: 'Питание', amount: '10 000 ₽', class: 'category-food' }
-                ]
-            },
-            'mother': {
-                amount: '52 500 ₽ (35%)',
-                categories: [
-                    { name: 'Продукты', amount: '25 000 ₽', class: 'category-food' },
-                    { name: 'Такси', amount: '10 000 ₽', class: 'category-transport' },
-                    { name: 'Одежда', amount: '17 500 ₽', class: 'category-other' }
-                ]
-            },
-            'father': {
-                amount: '67 500 ₽ (45%)',
-                categories: [
-                    { name: 'Топливо', amount: '30 000 ₽', class: 'category-transport' },
-                    { name: 'Подписки', amount: '15 000 ₽', class: 'category-other' },
-                    { name: 'Рестораны', amount: '22 500 ₽', class: 'category-food' }
-                ]
-            },
-            'dynamic': {
-                amount: '15 000 ₽ (10%)',
-                categories: [
-                    { name: 'Прочее (Динамика)', amount: '10 000 ₽', class: 'category-dynamic' },
-                    { name: 'Кафе', amount: '5 000 ₽', class: 'category-food' }
-                ]
-            }
+        
+        // --- ФУНКЦИЯ ЗАГРУЗКИ ИМЕН ИЗ LOCALSTORAGE (ИСПРАВЛЕНИЕ) ---
+        const getMemberName = (id, defaultName) => {
+            // Ключи: member_name_child, member_name_mother, member_name_father
+            return localStorage.getItem(`member_name_${id}`) || defaultName;
         };
 
-        // --- ДИНАМИЧЕСКИЙ РЕНДЕРИНГ ---
-        function generateCategoryListHTML(categories) {
-            return categories.map(cat => `
-                <li class="category-item ${cat.class || ''}">
-                    <span><i class="fas fa-circle"></i> ${cat.name}</span>
-                    <span>${cat.amount}</span>
-                </li>
-            `).join('');
-        }
-
-        function renderMemberCards() {
-            const members = getFamilyMembers();
-            
-            // Удаляем все старые карточки, чтобы избежать дублирования
-            const existingCards = document.querySelectorAll('.member-card');
-            existingCards.forEach(card => card.remove());
-
-            const summaryCard = document.querySelector('.summary-card');
-            let html = '';
-
-            members.forEach(member => {
-                const templateKey = member.type === 'dynamic' ? 'dynamic' : member.id;
-                const template = EXPENSE_TEMPLATES[templateKey] || EXPENSE_TEMPLATES['dynamic'];
-                
-                const iconClass = member.icon ? `fa-${member.icon}` : 'fa-user';
-                const headerClass = member.type === 'dynamic' ? 'dynamic' : '';
-                const displayAmount = (member.id in EXPENSE_TEMPLATES) ? template.amount : '... ₽ (0%)'; // Условные данные
-
-                html += `
-                    <div class="member-card" id="member_${member.id}">
-                        <div class="member-header ${headerClass}">
-                            <h3><i class="fas ${iconClass}"></i> <span>${member.name}</span></h3>
-                            <span class="member-amount">${displayAmount}</span>
-                        </div>
-                        <ul class="category-list">
-                            ${generateCategoryListHTML(template.categories)}
-                        </ul>
-                    </div>
-                `;
-            });
-            
-            if (summaryCard) {
-                summaryCard.insertAdjacentHTML('afterend', html);
-            } else {
-                memberCardsContainer.innerHTML += html;
-            }
-        }
+        const childName = getMemberName('child', 'Ребенок');
+        const motherName = getMemberName('mother', 'Мама');
+        const fatherName = getMemberName('father', 'Папа');
         
-        // --- ИНИЦИАЛИЗАЦИЯ И НАВИГАЦИЯ ---
-        renderMemberCards();
+        // Обновление имен в заголовках карточек
+        document.getElementById('childNameDisplay').textContent = childName;
+        document.getElementById('motherNameDisplay').textContent = motherName;
+        document.getElementById('fatherNameDisplay').textContent = fatherName;
+        
+        
+        // --- ЛОГИКА ПЕРЕХОДОВ И ЯКОРЕЙ (КОПИРОВАНИЕ) ---
 
+        // 1. Навигация назад к "Вся аналитика"
         document.getElementById('navToAnalyticsHome').addEventListener('click', () => {
             window.location.href = 'analytics_home.html'; 
+        });
+
+        // 2. Скроллинг к нужному якорю, если он указан в URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const scrollToId = urlParams.get('scrollTo');
+
+        if (scrollToId) {
+            const targetElement = document.getElementById(scrollToId);
+            if (targetElement) {
+                // Плавный скролл к элементу с небольшим отступом сверху
+                setTimeout(() => {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100); 
+            }
+        }
+
+        // 3. Навигация по нижнему меню (заглушки)
+        document.querySelector('.bottom-nav .nav-item:first-child').addEventListener('click', () => {
+            window.location.href = 'main_bank_screen.html'; 
+        });
+        document.querySelector('.bottom-nav .nav-item:nth-child(2)').addEventListener('click', () => {
+             alert('Переход на Платежи');
+        });
+        document.querySelector('.bottom-nav .nav-item:nth-child(3)').addEventListener('click', () => {
+             alert('Переход на Выгоду');
+        });
+        document.querySelector('.bottom-nav .nav-item:nth-child(5)').addEventListener('click', () => {
+             alert('Переход на Чаты');
         });
     });
 </script>
