@@ -482,5 +482,78 @@
         });
     });
 </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ctx = document.getElementById('expenseChart').getContext('2d');
+        
+        // Карта сегментов диаграммы и их целей
+        const segmentTargets = {
+            0: 'member_child',  // Ребенок (индекс 0 в массиве данных)
+            1: 'member_mother', // Мама (индекс 1)
+            2: 'member_father'  // Папа (индекс 2)
+        };
+
+        const expenseChart = new Chart(ctx, {
+            type: 'doughnut', 
+            data: {
+                labels: ['Ребенок', 'Мама', 'Папа'], 
+                datasets: [{
+                    data: [20, 35, 45], 
+                    backgroundColor: ['#801818', '#C02929', '#EE3124'],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                aspectRatio: 1, 
+                cutout: '70%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: true }
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 1000
+                },
+                // *** НОВАЯ ЛОГИКА: Обработка клика по сегменту ***
+                onClick: (e, elements) => {
+                    if (elements.length > 0) {
+                        const clickedElement = elements[0];
+                        const segmentIndex = clickedElement.index; // Получаем индекс сегмента
+                        const targetId = segmentTargets[segmentIndex];
+
+                        if (targetId) {
+                            // Перенаправляем на details_expenses.html, передавая якорь (hash) в URL
+                            window.location.href = `details_expenses.html?scrollTo=${targetId}`; 
+                        }
+                    }
+                }
+                // **********************************************
+            }
+        });
+
+        // --- ЛОГИКА ПЕРЕХОДОВ (остается без изменений) ---
+        // 1. Переход на Главный экран (Стрелка Назад)
+        document.getElementById('navToMain').addEventListener('click', () => {
+            window.location.href = 'main_bank_screen.html'; 
+        });
+        
+        // 2. Переход на Детализацию расходов (Расходы Tab)
+        document.getElementById('expensesTab').addEventListener('click', () => {
+            window.location.href = 'details_expenses.html'; 
+        });
+        
+        // ... (остальные переходы) ...
+
+        // 6. Переход на Семейную аналитику (Карточка)
+        document.getElementById('navToFamilyAnalytics').addEventListener('click', () => {
+            window.location.href = 'details_expenses.html'; 
+        });
+
+        // ... (остальные заглушки и нижняя навигация) ...
+    });
+</script>
 </body>
 </html>
