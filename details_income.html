@@ -3,29 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Детализация доходов</title>
+    <title>Вся аналитика расходов</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
     <style>
-        /* Общие стили (аналогичные analytics_home.html) */
+        /* Общие переменные и стили */
         body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: #f0f0f0;
             display: flex;
             justify-content: center;
-            padding-bottom: 80px;
         }
 
         :root {
             --alfa-red: #EE3124;
-            --alfa-green: #387B44; /* Новый цвет для доходов */
-            --green-c1-dark: #2A5A35;
-            --green-c2-medium: #387B44;
-            --green-c3-light: #5BAA69;
-            --text-color: #333;
+            --red-c1-dark: #801818; 
+            --red-c2-medium: #C02929;
+            --red-c3-light: #EE3124; 
             --bg-light-gray: #F7F7F7;
+            --text-color: #333;
             --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
@@ -36,253 +34,134 @@
             min-height: 100vh;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             position: relative;
+            padding-bottom: 80px;
         }
 
-        /* HEADER */
-        .header-nav {
-            padding: 0 20px;
-        }
+        /* HEADER & TABS */
+        .header-nav { padding: 0 20px; }
+        .back-settings { display: flex; justify-content: space-between; align-items: center; padding: 8px 0 15px 0; font-size: 18px; }
+        .month-selector { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; }
+        .month-selector h1 { font-size: 28px; font-weight: 600; margin: 0; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 25px; }
+        .tab { padding: 6px 12px; border: none; border-radius: 18px; background-color: #f0f0f0; font-size: 14px; font-weight: 500; }
+        .tab.active { background-color: #000; color: white; }
 
-        .back-settings {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0 15px 0;
-            font-size: 18px;
-            color: var(--text-color);
-        }
-        .settings-icon {
-            font-size: 20px;
-            cursor: pointer;
-        }
-        .back-arrow {
-            cursor: pointer;
-        }
-        
-        /* TABS */
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 25px;
-        }
-        .tab {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 18px;
-            background-color: #f0f0f0;
-            color: var(--text-color);
-            font-size: 14px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-        .tab.active {
-            background-color: #000;
-            color: white;
-        }
-        .current-title {
-            font-size: 28px;
-            font-weight: 600;
-            margin: 0 0 15px 0;
-        }
+        /* CARDS */
+        .content { padding: 0 20px; }
+        .card { background-color: white; border-radius: 20px; box-shadow: var(--card-shadow); margin-bottom: 20px; padding: 20px; }
+        .banner-card { background-color: var(--bg-light-gray); display: flex; justify-content: space-between; align-items: center; }
+        .banner-text h3 { font-size: 16px; margin: 0 0 5px 0; font-weight: 600; }
+        .banner-text p { font-size: 14px; margin: 0; color: #666; display: flex; align-items: center; }
+        .alfa-icon-a { width: 30px; height: 30px; background-color: var(--alfa-red); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; }
 
-
-        /* CHART CARD */
-        .content {
-            padding: 0 20px;
-        }
-        .chart-card {
-            background-color: white;
-            border-radius: 20px;
-            box-shadow: var(--card-shadow);
-            margin-bottom: 20px;
-            padding: 20px;
-            text-align: center;
-        }
-        .chart-canvas-wrapper {
-            max-width: 250px;
-            margin: 0 auto 20px auto;
-        }
-        .income-title {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        .total-income {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--alfa-green); 
-            margin-bottom: 20px;
-        }
-
-        /* LEGEND */
-        .legend {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            text-align: left;
-        }
-        .legend-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            font-size: 16px;
-            line-height: 1.2;
-            font-weight: 500;
-            cursor: pointer;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #eee;
-        }
-        .legend-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-        .legend-name {
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-        }
-        .legend-item span {
-             font-weight: 500;
-        }
-        
-        .color-swatch {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-
-        /* Цвета для легенды (Примерно 3 категории) */
-        .c1 { background-color: var(--green-c1-dark); }
-        .c2 { background-color: var(--green-c2-medium); }
-        .c3 { background-color: var(--green-c3-light); }
+        /* CHART & LEGEND */
+        .chart-card { padding: 20px 20px 10px 20px; text-align: center; }
+        .chart-canvas-wrapper { max-width: 250px; margin: 0 auto 10px auto; }
+        .chart-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; }
+        .legend { list-style: none; padding: 0; margin: 0; text-align: left; }
+        .legend-item { display: flex; align-items: center; margin-bottom: 12px; font-size: 16px; font-weight: 500; cursor: pointer; }
+        .color-swatch { display: inline-block; width: 14px; height: 14px; border-radius: 50%; margin-right: 10px; }
+        .c1 { background-color: var(--red-c1-dark); } .c2 { background-color: var(--red-c2-medium); } .c3 { background-color: var(--red-c3-light); } 
+        .actions i { font-size: 22px; color: #666; margin-left: 20px; cursor: pointer; }
 
         /* BOTTOM NAV */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 390px;
-            height: 70px;
-            background-color: white;
-            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding-bottom: 5px; 
-            font-size: 11px;
-            color: #888;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            position: relative;
-            font-weight: 500;
-        }
-        .nav-item i {
-            font-size: 22px;
-            margin-bottom: 4px;
-        }
-        .nav-item:nth-child(4) i, .nav-item:nth-child(4) span { 
-            color: var(--alfa-red);
-        }
+        .bottom-nav { /* ... стили ... */ }
+        .nav-item:nth-child(4) i, .nav-item:nth-child(4) span { color: var(--alfa-red); }
     </style>
 </head>
 <body>
 
 <div class="app-screen">
-    <div class="header-nav">
+    
+    <header class="header-nav">
         <div class="back-settings">
-            <i class="fas fa-chevron-left back-arrow" id="navToAnalytics"></i>
-            <i class="fas fa-exchange-alt settings-icon" id="navToSettings"></i>
+            <i class="fas fa-chevron-left back-arrow" id="navToMain"></i>
+            <i class="fas fa-exchange-alt settings-icon" id="navToSettings"></i> 
+        </div>
+        
+        <div class="month-selector">
+            <h1>Октябрь</h1>
+            <div class="arrows">
+                <i class="fas fa-chevron-left disabled-arrow"></i>
+                <i class="fas fa-chevron-right"></i>
+            </div>
         </div>
         
         <div class="tabs">
             <button class="tab" id="expensesTab">Расходы</button>
-            <button class="tab active" id="incomeTab">Доходы</button>
-            <button class="tab" id="allAnalyticsTab">Вся аналитика</button>
+            <button class="tab" id="incomeTab">Доходы</button>
+            <button class="tab active" id="allAnalyticsTab">Вся аналитика</button>
         </div>
-        <h1 class="current-title">Доходы за Октябрь</h1>
-    </div>
+    </header>
 
     <main class="content">
 
-        <div class="chart-card">
-            <div class="income-title">Общий доход</div>
-            <div class="total-income">250 000 ₽</div>
-            
+        <div class="card banner-card" id="navToFamilyAnalytics">
+            <div class="banner-text">
+                <h3>Семейная аналитика расходов</h3>
+                <p>Статистика по семейным тратам <span class="arrow-right">→</span></p>
+            </div>
+            <div class="alfa-icon-a">A</div>
+        </div>
+
+        <div class="card chart-card">
             <div class="chart-canvas-wrapper">
-                <canvas id="incomeChart"></canvas>
+                <canvas id="expenseChart"></canvas>
             </div>
             
-            <ul class="legend" id="incomeLegend">
-                </ul>
+            <div class="chart-footer">
+                <ul class="legend" id="expenseLegend">
+                    </ul>
+
+                <div class="actions">
+                    <i class="fas fa-pencil-alt" id="navToRename"></i> 
+                    <i class="fas fa-download" id="navToImport"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="card banner-card ai-card" id="navToRecommendationsCard">
+            <div class="banner-text">
+                <h3>Рекомендации ИИ</h3>
+                <p>На базе семейных расходов <span class="arrow-right">→</span></p>
+            </div>
+            <button class="ai-button" id="navToRecommendationsButton">Альфа-ИИ<i class="fas fa-plus-circle"></i></button>
         </div>
 
     </main>
 
     <nav class="bottom-nav">
-        <div class="nav-item" id="navToMainBottom">
-            <i class="fas fa-home"></i>
-            <span>Главный</span>
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-credit-card"></i>
-            <span>Платежи</span>
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-heart"></i>
-            <span>Выгода</span>
-        </div>
-        <div class="nav-item active-nav">
-            <i class="fas fa-history"></i>
-            <span>История</span>
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-comment-dots"></i>
-            <span>Чаты</span>
-        </div>
-    </nav>
+        </nav>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-
-        // --- Функция: Загрузка имен из localStorage (КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ) ---
+        
+        // --- Функция: Загрузка имен из localStorage (для поддержки переименования) ---
         const getMemberName = (id, defaultName) => {
-            if (id === 'child') return localStorage.getItem(`member_name_${id}`) || 'Ребенок';
-            if (id === 'mother') return localStorage.getItem(`member_name_${id}`) || 'Мама';
-            if (id === 'father') return localStorage.getItem(`member_name_${id}`) || 'Папа';
-            return defaultName;
+            return localStorage.getItem(`member_name_${id}`) || defaultName;
         };
 
         const childName = getMemberName('child', 'Ребенок');
         const motherName = getMemberName('mother', 'Мама');
         const fatherName = getMemberName('father', 'Папа');
-        
-        // Данные для графика доходов (Пример)
-        const incomeData = [
-            { id: 'father', name: fatherName, amount: 150000, percentage: 60, color: '#2A5A35' }, // Папа (ЗП)
-            { id: 'mother', name: motherName, amount: 80000, percentage: 32, color: '#387B44' }, // Мама (Доп. доход)
-            { id: 'child', name: childName, amount: 20000, percentage: 8, color: '#5BAA69' }, // Ребенок (Подарки)
+
+        const expenseData = [
+            { id: 'member_child', name: childName, amount: 30000, percentage: 20, color: '#801818' },
+            { id: 'member_mother', name: motherName, amount: 52500, percentage: 35, color: '#C02929' },
+            { id: 'member_father', name: fatherName, amount: 67500, percentage: 45, color: '#EE3124' },
         ];
-        
+
+
         // --- ЛОГИКА ГРАФИКА ---
-        const ctx = document.getElementById('incomeChart').getContext('2d');
-        const incomeChart = new Chart(ctx, {
+        const ctx = document.getElementById('expenseChart').getContext('2d');
+        const expenseChart = new Chart(ctx, {
             type: 'doughnut', 
             data: {
-                labels: incomeData.map(d => d.name),
+                labels: expenseData.map(d => d.name), 
                 datasets: [{
-                    data: incomeData.map(d => d.percentage),
-                    backgroundColor: incomeData.map(d => d.color),
+                    data: expenseData.map(d => d.percentage), 
+                    backgroundColor: expenseData.map(d => d.color),
                     borderWidth: 0,
                     hoverOffset: 10
                 }]
@@ -291,15 +170,12 @@
                 responsive: true,
                 aspectRatio: 1, 
                 cutout: '70%', 
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { enabled: true }
-                },
+                plugins: { legend: { display: false }, tooltip: { enabled: true } },
                 animation: { duration: 1000 },
                 onClick: (e, elements) => {
-                    // При клике на сегмент, можно перейти на детализацию доходов (если есть)
                     if (elements.length > 0) {
-                       alert(`Детализация доходов для: ${incomeData[elements[0].index].name}`);
+                        const targetId = expenseData[elements[0].index].id;
+                        window.location.href = `details_expenses.html?scrollTo=${targetId}`; 
                     }
                 }
             }
@@ -307,26 +183,25 @@
         
         // --- Обновление HTML легенды ---
         const updateHTMLLegend = () => {
-            const legendContainer = document.getElementById('incomeLegend');
-            legendContainer.innerHTML = ''; // Очистка
+            const legendContainer = document.getElementById('expenseLegend');
+            legendContainer.innerHTML = '';
             
-            incomeData.forEach((item, index) => {
+            expenseData.forEach((item, index) => {
                 const li = document.createElement('li');
                 li.className = 'legend-item';
                 li.setAttribute('data-segment-id', item.id);
-                
-                // Используем класс для цвета c1, c2, c3
                 const colorClass = `c${index + 1}`; 
-
-                li.innerHTML = `
-                    <div class="legend-name">
-                        <span class="color-swatch ${colorClass}"></span>${item.name}
-                    </div>
-                    <span>
-                        <b>${item.amount.toLocaleString('ru-RU')} ₽</b> (${item.percentage}%)
-                    </span>
-                `;
+                
+                li.innerHTML = `<span class="color-swatch ${colorClass}"></span>${item.name}: <b>${item.amount.toLocaleString('ru-RU')} ₽</b>`;
                 legendContainer.appendChild(li);
+                
+                // Добавляем обработчик клика на легенду
+                li.addEventListener('click', (e) => {
+                    const targetId = e.currentTarget.getAttribute('data-segment-id');
+                    if (targetId) {
+                        window.location.href = `details_expenses.html?scrollTo=${targetId}`;
+                    }
+                });
             });
         };
         
@@ -334,28 +209,20 @@
 
 
         // --- ЛОГИКА ПЕРЕХОДОВ ---
-        
-        // 1. Переход обратно на Вся аналитика
-        document.getElementById('navToAnalytics').addEventListener('click', () => {
-            window.location.href = 'analytics_home.html'; 
+        document.getElementById('navToMain').addEventListener('click', () => {
+            window.location.href = 'main_bank_screen.html'; 
         });
-        document.getElementById('allAnalyticsTab').addEventListener('click', () => {
-             window.location.href = 'analytics_home.html'; 
+        document.getElementById('incomeTab').addEventListener('click', () => {
+             window.location.href = 'details_income.html'; 
         });
-
-        // 2. Переход на Расходы
         document.getElementById('expensesTab').addEventListener('click', () => {
              window.location.href = 'details_expenses.html'; 
         });
-
-        // 3. Переход на Главный экран (Нижнее меню)
-        document.getElementById('navToMainBottom').addEventListener('click', () => {
-             window.location.href = 'main_bank_screen.html'; 
+        document.getElementById('navToRename').addEventListener('click', () => {
+            window.location.href = 'settings_family.html'; 
         });
-        
-        // 4. Заглушка для иконки "Настройки/Сортировка"
-        document.getElementById('navToSettings').addEventListener('click', () => {
-            alert('Сортировка/Фильтрация не реализована.');
+        document.getElementById('navToImport').addEventListener('click', () => {
+            window.location.href = 'import_data.html'; 
         });
     });
 </script>
