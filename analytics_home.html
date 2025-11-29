@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
     <style>
-        /* Общие переменные и стили (как в предыдущем ответе) */
+        /* Общие переменные и стили */
         body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -19,10 +19,10 @@
 
         :root {
             --alfa-red: #EE3124;
-            /* Цвета для графика */
+            /* Цвета для графика (как в скриншотах) */
             --red-c1-dark: #801818; 
             --red-c2-medium: #C02929;
-            --red-c3-light: #EE3124; /* Используем основной Альфа-красный для Папы */
+            --red-c3-light: #EE3124; 
             
             --bg-light-gray: #F7F7F7;
             --text-color: #333;
@@ -196,6 +196,7 @@
             font-size: 16px;
             line-height: 1.2;
             font-weight: 500;
+            cursor: pointer; /* Делаем легенду кликабельной */
         }
         .color-swatch {
             display: inline-block;
@@ -345,9 +346,9 @@
             
             <div class="chart-footer">
                 <ul class="legend">
-                    <li class="legend-item"><span class="color-swatch c1"></span>Ребенок</li>
-                    <li class="legend-item"><span class="color-swatch c2"></span>Мама</li>
-                    <li class="legend-item"><span class="color-swatch c3"></span>Папа</li>
+                    <li class="legend-item" data-segment-id="member_child"><span class="color-swatch c1"></span>Ребенок: **30 000 ₽**</li>
+                    <li class="legend-item" data-segment-id="member_mother"><span class="color-swatch c2"></span>Мама: **52 500 ₽**</li>
+                    <li class="legend-item" data-segment-id="member_father"><span class="color-swatch c3"></span>Папа: **67 500 ₽**</li>
                 </ul>
 
                 <div class="actions">
@@ -368,7 +369,7 @@
     </main>
 
     <nav class="bottom-nav">
-        <div class="nav-item">
+        <div class="nav-item" id="navToMainBottom">
             <i class="fas fa-home"></i>
             <span>Главный</span>
         </div>
@@ -395,42 +396,93 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- ЛОГИКА ГРАФИКА (с анимацией при наведении) ---
+        
+        // Карта сегментов диаграммы и их целей (ID элемента в details_expenses.html)
+        const segmentTargets = {
+            0: 'member_child',  // Индекс 0
+            1: 'member_mother', // Индекс 1
+            2: 'member_father'  // Индекс 2
+        };
+        
+        // --- Функция: Загрузка имен из localStorage ---
+        const getMemberName = (id, defaultName) => {
+            // Пытаемся получить сохраненное имя, иначе возвращаем дефолтное
+            return localStorage.getItem(`member_name_${id}`) || defaultName;
+        };
+
+        const childName = getMemberName('child', 'Ребенок');
+        const motherName = getMemberName('mother', 'Мама');
+        const fatherName = getMemberName('father', 'Папа');
+
+        // --- ЛОГИКА ГРАФИКА (с анимацией и кликом) ---
         const ctx = document.getElementById('expenseChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'doughnut', // Используем Doughnut (бублик)
+        const expenseChart = new Chart(ctx, {
+            type: 'doughnut', 
             data: {
-                labels: ['Ребенок', 'Мама', 'Папа'], 
+                // Используем динамические имена, загруженные из localStorage
+                labels: [childName, motherName, fatherName], 
                 datasets: [{
-                    // Примерные данные, основанные на пропорциях скриншота
-                    data: [20, 35, 45], 
+                    data: [20, 35, 45], // Процентное соотношение расходов
                     backgroundColor: ['#801818', '#C02929', '#EE3124'],
                     borderWidth: 0,
-                    hoverOffset: 10 // Сектор выдвигается на 10px при наведении
+                    hoverOffset: 10
                 }]
             },
             options: {
                 responsive: true,
                 aspectRatio: 1, 
-                cutout: '70%', // Делаем бублик
+                cutout: '70%', 
                 plugins: {
                     legend: { display: false },
-                    tooltip: { enabled: true } // Оставляем всплывающие подсказки включенными для интерактивности
+                    tooltip: { enabled: true }
                 },
-                // Анимация при загрузке
                 animation: {
                     animateRotate: true,
                     animateScale: true,
-                    duration: 1000 // Длительность анимации
+                    duration: 1000
+                },
+                onClick: (e, elements) => {
+                    if (elements.length > 0) {
+                        const clickedElement = elements[0];
+                        const segmentIndex = clickedElement.index; 
+                        const targetId = segmentTargets[segmentIndex];
+
+                        if (targetId) {
+                            window.location.href = `details_expenses.html?scrollTo=${targetId}`; 
+                        }
+                    }
                 }
             }
         });
+        
+        // --- Обновление HTML легенды (абсолютные значения и динамические имена) ---
+        const updateHTMLLegend = () => {
+            document.querySelector('[data-segment-id="member_child"]').innerHTML = 
+                `<span class="color-swatch c1"></span>${childName}: **30 000 ₽**`;
+            
+            document.querySelector('[data-segment-id="member_mother"]').innerHTML = 
+                `<span class="color-swatch c2"></span>${motherName}: **52 500 ₽**`;
+            
+            document.querySelector('[data-segment-id="member_father"]').innerHTML = 
+                `<span class="color-swatch c3"></span>${fatherName}: **67 500 ₽**`;
+        };
+        
+        updateHTMLLegend();
+
 
         // --- ЛОГИКА ПЕРЕХОДОВ ---
+        
+        // Функция перехода на детализацию с якорем
+        const navigateToDetails = (targetId) => {
+            window.location.href = `details_expenses.html?scrollTo=${targetId}`;
+        };
 
-        // 1. Переход на Главный экран (Стрелка Назад)
+        // 1. Переход на Главный экран (Стрелка Назад и нижнее меню)
         document.getElementById('navToMain').addEventListener('click', () => {
             window.location.href = 'main_bank_screen.html'; 
+        });
+        document.getElementById('navToMainBottom').addEventListener('click', () => {
+             window.location.href = 'main_bank_screen.html'; 
         });
         
         // 2. Переход на Детализацию расходов (Расходы Tab)
@@ -442,117 +494,45 @@
         document.getElementById('navToRename').addEventListener('click', () => {
             window.location.href = 'settings_family.html'; 
         });
-
+        
         // 4. Переход на Импорт данных (Иконка Загрузки)
         document.getElementById('navToImport').addEventListener('click', () => {
-            window.location.href = 'import_data.html'; 
+            alert('Переход на: import_data.html'); 
         });
 
         // 5. Переход на Рекомендации ИИ (Кнопка Альфа-ИИ)
         const navToRecommendations = () => {
-            window.location.href = 'ai_recommendations.html';
+            alert('Переход на: ai_recommendations.html'); 
         };
         document.getElementById('navToRecommendationsButton').addEventListener('click', navToRecommendations);
         document.getElementById('navToRecommendationsCard').addEventListener('click', navToRecommendations);
         
-        // 6. Переход на Семейную аналитику (Карточка)
+        // 6. Переход на Семейную аналитику (Карточка) - ведет на детализацию
         document.getElementById('navToFamilyAnalytics').addEventListener('click', () => {
-            window.location.href = 'details_expenses.html'; // По логике, ведет на детализацию
+            window.location.href = 'details_expenses.html'; 
         });
 
-        // 7. Заглушка для иконки "Настройки"
+        // 7. Обработка клика по легенде 
+        document.querySelectorAll('.legend-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const targetId = e.currentTarget.getAttribute('data-segment-id');
+                if (targetId) {
+                    navigateToDetails(targetId);
+                }
+            });
+        });
+        
+        // 8. Заглушка для иконки "Настройки" и таба "Доходы"
         document.getElementById('navToSettings').addEventListener('click', () => {
             alert('Сортировка/Фильтрация не реализована.');
         });
-        
-        // 8. Заглушка для таба "Доходы"
         document.getElementById('incomeTab').addEventListener('click', () => {
              document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
              document.getElementById('incomeTab').classList.add('active');
              alert('Экран "Доходы" временно не реализован.');
         });
         
-        // Делаем таб "Вся аналитика" активным по умолчанию
         document.getElementById('allAnalyticsTab').classList.add('active');
-        
-        // --- ЛОГИКА НИЖНЕЙ НАВИГАЦИИ (для имитации) ---
-        // Переход с "Истории" на "Главный"
-        document.querySelector('.bottom-nav .nav-item:first-child').addEventListener('click', () => {
-             window.location.href = 'main_bank_screen.html'; 
-        });
-    });
-</script>
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const ctx = document.getElementById('expenseChart').getContext('2d');
-        
-        // Карта сегментов диаграммы и их целей
-        const segmentTargets = {
-            0: 'member_child',  // Ребенок (индекс 0 в массиве данных)
-            1: 'member_mother', // Мама (индекс 1)
-            2: 'member_father'  // Папа (индекс 2)
-        };
-
-        const expenseChart = new Chart(ctx, {
-            type: 'doughnut', 
-            data: {
-                labels: ['Ребенок', 'Мама', 'Папа'], 
-                datasets: [{
-                    data: [20, 35, 45], 
-                    backgroundColor: ['#801818', '#C02929', '#EE3124'],
-                    borderWidth: 0,
-                    hoverOffset: 10
-                }]
-            },
-            options: {
-                responsive: true,
-                aspectRatio: 1, 
-                cutout: '70%',
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { enabled: true }
-                },
-                animation: {
-                    animateRotate: true,
-                    animateScale: true,
-                    duration: 1000
-                },
-                // *** НОВАЯ ЛОГИКА: Обработка клика по сегменту ***
-                onClick: (e, elements) => {
-                    if (elements.length > 0) {
-                        const clickedElement = elements[0];
-                        const segmentIndex = clickedElement.index; // Получаем индекс сегмента
-                        const targetId = segmentTargets[segmentIndex];
-
-                        if (targetId) {
-                            // Перенаправляем на details_expenses.html, передавая якорь (hash) в URL
-                            window.location.href = `details_expenses.html?scrollTo=${targetId}`; 
-                        }
-                    }
-                }
-                // **********************************************
-            }
-        });
-
-        // --- ЛОГИКА ПЕРЕХОДОВ (остается без изменений) ---
-        // 1. Переход на Главный экран (Стрелка Назад)
-        document.getElementById('navToMain').addEventListener('click', () => {
-            window.location.href = 'main_bank_screen.html'; 
-        });
-        
-        // 2. Переход на Детализацию расходов (Расходы Tab)
-        document.getElementById('expensesTab').addEventListener('click', () => {
-            window.location.href = 'details_expenses.html'; 
-        });
-        
-        // ... (остальные переходы) ...
-
-        // 6. Переход на Семейную аналитику (Карточка)
-        document.getElementById('navToFamilyAnalytics').addEventListener('click', () => {
-            window.location.href = 'details_expenses.html'; 
-        });
-
-        // ... (остальные заглушки и нижняя навигация) ...
     });
 </script>
 </body>
