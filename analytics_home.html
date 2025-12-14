@@ -5,119 +5,293 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вся аналитика расходов</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
     <style>
-        /* Общие переменные и стили */
+        /* --- ОБЩИЕ СТИЛИ (Оригинальный дизайн) --- */
         body {
             margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f0f0f0;
+            font-family: 'Roboto', sans-serif; /* Используем шрифт, похожий на системный */
+            background-color: #f2f2f7; /* Светло-серый фон iOS */
             display: flex;
             justify-content: center;
+            color: #000;
         }
 
         :root {
-            --alfa-red: #EE3124;
-            /* Обновленные, контрастные цвета для диаграммы: */
-            --expense-c1: #A30000;    /* Темный контраст */
-            --expense-c2: #EE3124;    /* Основной красный */
-            --expense-c3: #FF7043;    /* Оранжевый/Светлый контраст */
-            --bg-light-gray: #F7F7F7;
-            --text-color: #333;
-            --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --alfa-red: #EF3124;
+            /* --- НОВЫЕ КОНТРАСТНЫЕ ЦВЕТА ДЛЯ ДИАГРАММЫ (Запрос 1) --- */
+            /* Используем черный, красный и оранжевый для максимального контраста */
+            --expense-c1: #000000;    /* Черный (dd) */
+            --expense-c2: #EF3124;    /* Альфа-красный (Оля) */
+            --expense-c3: #FF7D54;    /* Оранжевый (Даня) */
+            
+            --bg-card: #FFFFFF;
+            --bg-secondary: #F2F2F7;
+            --text-secondary: #8E8E93;
         }
 
         .app-screen {
             width: 100%;
-            max-width: 390px;
-            background-color: white;
+            max-width: 390px; /* Ширина iPhone */
+            background-color: var(--bg-secondary);
             min-height: 100vh;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             position: relative;
-            padding-bottom: 80px;
+            padding-bottom: 90px; /* Место для нижнего меню */
+            overflow-x: hidden;
         }
 
-        /* HEADER & TABS */
-        .header-nav { padding: 0 20px; }
-        .back-settings { display: flex; justify-content: space-between; align-items: center; padding: 8px 0 15px 0; font-size: 18px; }
-        .month-selector { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; }
-        .month-selector h1 { font-size: 28px; font-weight: 600; margin: 0; }
-        .tabs { display: flex; gap: 8px; margin-bottom: 25px; }
-        .tab { padding: 6px 12px; border: none; border-radius: 18px; background-color: #f0f0f0; font-size: 14px; font-weight: 500; cursor: pointer; }
-        .tab.active { background-color: #000; color: white; }
-
-        /* CARDS */
-        .content { padding: 0 20px; }
-        .card { background-color: white; border-radius: 20px; box-shadow: var(--card-shadow); margin-bottom: 20px; padding: 20px; }
-        .banner-card { background-color: var(--bg-light-gray); display: flex; justify-content: space-between; align-items: center; }
-        .banner-text h3 { font-size: 16px; margin: 0 0 5px 0; font-weight: 600; }
-        .banner-text p { font-size: 14px; margin: 0; color: #666; display: flex; align-items: center; }
-        .alfa-icon-a { width: 30px; height: 30px; background-color: var(--alfa-red); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; }
-
-        /* CHART & LEGEND */
-        .chart-card { padding: 20px 20px 10px 20px; text-align: center; }
-        .chart-canvas-wrapper { max-width: 250px; margin: 0 auto 10px auto; }
-        .chart-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; }
-        .legend { list-style: none; padding: 0; margin: 0; text-align: left; }
-        .legend-item { display: flex; align-items: center; margin-bottom: 12px; font-size: 16px; font-weight: 500; cursor: pointer; }
-        .color-swatch { display: inline-block; width: 14px; height: 14px; border-radius: 50%; margin-right: 10px; }
+        /* --- ШАПКА (Оригинальный дизайн с фото 6) --- */
+        .status-bar-placeholder {
+            height: 44px; /* Высота статус-бара */
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 20px 10px;
+            font-weight: 600;
+            font-size: 15px;
+        }
         
-        /* ОБНОВЛЕННЫЕ КЛАССЫ ЦВЕТОВ */
+        .header-nav {
+            padding: 10px 20px;
+            background-color: var(--bg-secondary);
+        }
+
+        .top-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 20px;
+            color: #007AFF; /* Цвет системных иконок iOS */
+        }
+        .back-arrow, .settings-icon { cursor: pointer; }
+
+        .month-selector {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .month-selector h1 {
+            font-size: 34px;
+            font-weight: 700;
+            margin: 0;
+            color: #000;
+        }
+        .arrows i {
+            font-size: 16px;
+            padding-left: 15px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        .arrows i.active { color: #000; }
+
+        /* --- ТАБЫ (Оригинальный дизайн) --- */
+        .tabs {
+            display: inline-flex;
+            background-color: #E5E5EA; /* Серый фон контейнера табов */
+            border-radius: 20px;
+            padding: 2px;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 18px;
+            background-color: transparent;
+            color: #000;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab.active {
+            background-color: #000;
+            color: #fff;
+        }
+
+        /* --- КОНТЕНТ И КАРТОЧКИ --- */
+        .content { padding: 0 20px; }
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Карточка "Семейная аналитика" (Верхняя) */
+        .family-banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .family-text h3 {
+            font-size: 17px;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+        }
+        .family-text p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin: 0;
+            cursor: pointer;
+            display: flex; align-items: center;
+        }
+        .alfa-icon-a {
+            width: 32px; height: 32px;
+            background-color: var(--alfa-red);
+            color: white;
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: 700; font-size: 18px;
+        }
+
+        /* --- БЛОК ДИАГРАММЫ --- */
+        .chart-card {
+            padding-top: 25px;
+        }
+
+        /* --- НОВЫЙ БЛОК: ОБЩАЯ СУММА (Запрос 2) --- */
+        /* Стилизован под оригинальный дизайн (фото 6) */
+        .total-expense-block {
+            margin-bottom: 20px;
+        }
+        .total-expense-block .label {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        .total-expense-block .amount {
+            font-size: 34px;
+            font-weight: 700;
+            color: var(--alfa-red);
+            letter-spacing: -0.5px;
+        }
+
+        .chart-canvas-wrapper {
+            max-width: 240px;
+            margin: 0 auto 20px auto;
+            position: relative;
+        }
+        /* Белый круг в центре для стиля "бублик" */
+        .chart-center-hole {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 65%; height: 65%;
+            background-color: var(--bg-card);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        canvas { position: relative; z-index: 1; }
+
+        /* Легенда и действия */
+        .chart-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .legend {
+            list-style: none; padding: 0; margin: 0; text-align: left;
+        }
+        .legend-item {
+            display: flex; align-items: center;
+            margin-bottom: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .legend-item:last-child { margin-bottom: 0; }
+        .legend-item span.name { font-weight: 400; margin-right: 4px;}
+
+        .color-swatch {
+            display: inline-block; width: 12px; height: 12px;
+            border-radius: 50%; margin-right: 10px;
+        }
+        /* Применяем новые контрастные цвета */
         .c1 { background-color: var(--expense-c1); } 
         .c2 { background-color: var(--expense-c2); } 
         .c3 { background-color: var(--expense-c3); } 
 
-        .actions i { font-size: 22px; color: #666; margin-left: 20px; cursor: pointer; }
-
-        /* НОВЫЙ БЛОК: ОБЩАЯ СУММА */
-        .total-expense-block {
-            text-align: left;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .total-expense-block .label {
-            font-size: 14px;
-            color: #888;
-            margin-bottom: 5px;
-        }
-        .total-expense-block .amount {
+        .actions i {
             font-size: 24px;
-            font-weight: 700;
-            color: var(--alfa-red);
+            color: #C7C7CC; /* Светло-серый цвет иконок действий */
+            margin-left: 24px;
+            cursor: pointer;
         }
 
-        /* BOTTOM NAV */
+        /* --- КАРТОЧКА ИИ (Оригинальный дизайн с фото 6) --- */
+        .ai-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+        }
+        .ai-text h3 { font-size: 17px; font-weight: 600; margin: 0 0 4px 0; }
+        .ai-text p { font-size: 15px; color: var(--text-secondary); margin: 0; cursor: pointer; display: flex; align-items: center;}
+        
+        /* ИСПРАВЛЕННАЯ КНОПКА ИИ (Стиль как на фото 6 - маленькая, серая) */
+        .ai-button {
+            background-color: #F2F2F7; /* Светло-серый фон */
+            color: #000; /* Черный текст */
+            border: none;
+            padding: 6px 12px;
+            border-radius: 14px;
+            font-weight: 500;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: none; /* Убираем тень */
+        }
+        .ai-button i {
+            font-size: 12px;
+            margin-left: 4px;
+            color: #000; /* Черная иконка */
+        }
+
+        /* --- НИЖНЕЕ МЕНЮ (Оригинальный дизайн) --- */
         .bottom-nav {
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 100%; max-width: 390px; height: 70px; background-color: white;
-            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05); display: flex;
-            justify-content: space-around; align-items: center; padding-bottom: 5px; 
-            font-size: 11px; color: #888;
+            width: 100%; max-width: 390px; height: 83px;
+            background-color: rgba(255,255,255,0.9); /* Полупрозрачный фон */
+            backdrop-filter: blur(10px); /* Эффект размытия iOS */
+            border-top: 1px solid #C6C6C8;
+            display: flex; justify-content: space-around; align-items: flex-start;
+            padding-top: 10px; box-sizing: border-box;
+            color: #999999; font-size: 10px;
         }
         .nav-item {
-            display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 500;
+            display: flex; flex-direction: column; align-items: center;
+            cursor: pointer; font-weight: 500; width: 20%;
         }
-        .nav-item i { font-size: 22px; margin-bottom: 4px; }
-        .nav-item:nth-child(4) i, .nav-item:nth-child(4) span { color: var(--alfa-red); }
+        .nav-item i { font-size: 24px; margin-bottom: 4px; }
+        /* Активный пункт меню - красный */
+        .nav-item.active-nav i, .nav-item.active-nav span { color: var(--alfa-red); }
     </style>
 </head>
 <body>
 
 <div class="app-screen">
     
+    <div class="status-bar-placeholder">
+        <span>9:41</span>
+        <span><i class="fas fa-signal"></i> <i class="fas fa-wifi"></i> <i class="fas fa-battery-full"></i></span>
+    </div>
+
     <header class="header-nav">
-        <div class="back-settings">
+        <div class="top-controls">
             <i class="fas fa-chevron-left back-arrow" id="navToMain"></i>
-            <i class="fas fa-exchange-alt settings-icon" id="navToSettings"></i> 
-        </div>
+            <i class="fas fa-exchange-alt settings-icon"></i> </div>
         
         <div class="month-selector">
             <h1>Октябрь</h1>
             <div class="arrows">
-                <i class="fas fa-chevron-left disabled-arrow"></i>
-                <i class="fas fa-chevron-right"></i>
+                <i class="fas fa-chevron-left"></i>
+                <i class="fas fa-chevron-right active"></i>
             </div>
         </div>
         
@@ -130,10 +304,10 @@
 
     <main class="content">
 
-        <div class="card banner-card" id="navToFamilyAnalytics">
-            <div class="banner-text">
+        <div class="card family-banner" id="navToFamilyAnalytics">
+            <div class="family-text">
                 <h3>Семейная аналитика расходов</h3>
-                <p>Статистика по семейным тратам <span class="arrow-right">→</span></p>
+                <p>Статистика по семейным тратам <i class="fas fa-chevron-right" style="font-size: 12px; margin-left: 5px;"></i></p>
             </div>
             <div class="alfa-icon-a">A</div>
         </div>
@@ -146,6 +320,7 @@
             </div>
 
             <div class="chart-canvas-wrapper">
+                <div class="chart-center-hole"></div>
                 <canvas id="expenseChart"></canvas>
             </div>
             
@@ -154,16 +329,16 @@
                     </ul>
 
                 <div class="actions">
-                    <i class="fas fa-pencil-alt" id="navToRename"></i> 
-                    <i class="fas fa-download" id="navToImport"></i>
+                    <i class="fas fa-pen" id="navToRename" style="font-size: 18px;"></i> 
+                    <i class="fas fa-download" id="navToImport" style="font-size: 20px;"></i>
                 </div>
             </div>
         </div>
 
-        <div class="card banner-card ai-card" id="navToRecommendationsCard">
-            <div class="banner-text">
+        <div class="card ai-card" id="navToRecommendationsCard">
+            <div class="ai-text">
                 <h3>Рекомендации ИИ</h3>
-                <p>На базе семейных расходов <span class="arrow-right">→</span></p>
+                <p>На базе семейных расходов <i class="fas fa-chevron-right" style="font-size: 12px; margin-left: 5px;"></i></p>
             </div>
             <button class="ai-button" id="navToRecommendationsButton">Альфа-ИИ<i class="fas fa-plus-circle"></i></button>
         </div>
@@ -176,11 +351,11 @@
             <span>Главный</span>
         </div>
         <div class="nav-item">
-            <i class="fas fa-credit-card"></i>
+            <i class="far fa-credit-card"></i>
             <span>Платежи</span>
         </div>
         <div class="nav-item">
-            <i class="fas fa-heart"></i>
+            <i class="far fa-heart"></i>
             <span>Выгода</span>
         </div>
         <div class="nav-item active-nav">
@@ -188,7 +363,7 @@
             <span>История</span>
         </div>
         <div class="nav-item">
-            <i class="fas fa-comment-dots"></i>
+            <i class="far fa-comment-dots"></i>
             <span>Чаты</span>
         </div>
     </nav>
@@ -197,51 +372,57 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         
-        // --- Функция: Загрузка имен из localStorage (для поддержки переименования) ---
+        // --- Функция: Загрузка имен из localStorage ---
         const getMemberName = (id, defaultName) => {
             return localStorage.getItem(`member_name_${id}`) || defaultName;
         };
 
-        const childName = getMemberName('child', 'Ребенок');
-        const motherName = getMemberName('mother', 'Мама');
-        const fatherName = getMemberName('father', 'Папа');
+        // Используем имена из макета (фото 6) как дефолтные, но с возможностью переименования через localStorage
+        const childName = getMemberName('child', 'dd'); // Имя из макета
+        const motherName = getMemberName('mother', 'Оля');
+        const fatherName = getMemberName('father', 'Даня');
 
-        // Используем исходные цифры из Вашего запроса
+        // Данные с НОВЫМИ КОНТРАСТНЫМИ ЦВЕТАМИ (Запрос 1)
         const expenseData = [
-            { id: 'member_child', name: childName, amount: 30000, percentage: 20, color: 'var(--expense-c3)' },
-            { id: 'member_mother', name: motherName, amount: 52500, percentage: 35, color: 'var(--expense-c2)' },
-            { id: 'member_father', name: fatherName, amount: 67500, percentage: 45, color: 'var(--expense-c1)' },
+            { id: 'member_child', name: childName, amount: 30000, percentage: 20, color: 'var(--expense-c1)' }, // Черный
+            { id: 'member_mother', name: motherName, amount: 52500, percentage: 35, color: 'var(--expense-c2)' }, // Красный
+            { id: 'member_father', name: fatherName, amount: 67500, percentage: 45, color: 'var(--expense-c3)' }, // Оранжевый
         ];
         
-        // Расчет общей суммы
+        // Расчет и отображение общей суммы (Запрос 2)
         const totalExpense = expenseData.reduce((sum, item) => sum + item.amount, 0);
-        const formatCurrency = (value) => value.toLocaleString('ru-RU') + ' ₽';
-
-
-        // --- ОБРАБОТКА ПРОБЛЕМЫ 2: ОБЩАЯ СУММА ---
+        const formatCurrency = (value) => value.toLocaleString('ru-RU').replace(',', '.') + ' ₽';
         document.getElementById('totalExpenseAmount').textContent = formatCurrency(totalExpense);
 
 
-        // --- ЛОГИКА ГРАФИКА (С ОБНОВЛЕННЫМИ ЦВЕТАМИ) ---
+        // --- ЛОГИКА ГРАФИКА ---
         const ctx = document.getElementById('expenseChart').getContext('2d');
+        // Увеличиваем разрешение canvas для четкости на ретине
+        const canvas = document.getElementById('expenseChart');
+        canvas.width = 240 * 2;
+        canvas.height = 240 * 2;
+        canvas.style.width = '240px';
+        canvas.style.height = '240px';
+        ctx.scale(2, 2);
+
         const expenseChart = new Chart(ctx, {
             type: 'doughnut', 
             data: {
                 labels: expenseData.map(d => d.name), 
                 datasets: [{
                     data: expenseData.map(d => d.percentage), 
-                    // ИСПОЛЬЗУЕМ ОБНОВЛЕННЫЕ, КОНТРАСТНЫЕ ЦВЕТА ИЗ expenseData
                     backgroundColor: expenseData.map(d => d.color),
-                    borderWidth: 0,
-                    hoverOffset: 10
+                    borderWidth: 0, // Убираем границы сегментов
+                    hoverOffset: 5
                 }]
             },
             options: {
-                responsive: true,
-                aspectRatio: 1, 
-                cutout: '70%', 
-                plugins: { legend: { display: false }, tooltip: { enabled: true } },
+                responsive: false,
+                maintainAspectRatio: false,
+                cutout: '78%', // Тонкий бублик как на макете
+                plugins: { legend: { display: false }, tooltip: { enabled: false } }, // Отключаем стандартные тултипы
                 animation: { duration: 1000 },
+                layout: { padding: 0 },
                 onClick: (e, elements) => {
                     if (elements.length > 0) {
                         const targetId = expenseData[elements[0].index].id;
@@ -251,7 +432,7 @@
             }
         });
         
-        // --- Обновление HTML легенды (с новыми цветами) ---
+        // --- Обновление HTML легенды ---
         const updateHTMLLegend = () => {
             const legendContainer = document.getElementById('expenseLegend');
             legendContainer.innerHTML = '';
@@ -260,13 +441,12 @@
                 const li = document.createElement('li');
                 li.className = 'legend-item';
                 li.setAttribute('data-segment-id', item.id);
-                // Назначаем класс цвета, соответствующий его индексу
                 const colorClass = `c${index + 1}`; 
                 
-                li.innerHTML = `<span class="color-swatch ${colorClass}"></span>${item.name}: <b>${formatCurrency(item.amount)}</b>`;
+                // Формат: Цвет Имя: Сумма
+                li.innerHTML = `<span class="color-swatch ${colorClass}"></span><span class="name">${item.name}:</span>${formatCurrency(item.amount)}`;
                 legendContainer.appendChild(li);
                 
-                // Добавляем обработчик клика на легенду
                 li.addEventListener('click', (e) => {
                     const targetId = e.currentTarget.getAttribute('data-segment-id');
                     if (targetId) {
@@ -280,21 +460,12 @@
 
 
         // --- ЛОГИКА ПЕРЕХОДОВ ---
-        document.getElementById('navToMain').addEventListener('click', () => {
-            window.location.href = 'main_bank_screen.html'; 
-        });
-        document.getElementById('incomeTab').addEventListener('click', () => {
-             window.location.href = 'details_income.html'; 
-        });
-        document.getElementById('expensesTab').addEventListener('click', () => {
-             window.location.href = 'details_expenses.html'; 
-        });
-        document.getElementById('navToRename').addEventListener('click', () => {
-            window.location.href = 'settings_family.html'; 
-        });
-        document.getElementById('navToImport').addEventListener('click', () => {
-            window.location.href = 'import_data.html'; 
-        });
+        document.getElementById('navToMain').addEventListener('click', () => window.location.href = 'main_bank_screen.html');
+        document.getElementById('incomeTab').addEventListener('click', () => window.location.href = 'details_income.html');
+        document.getElementById('expensesTab').addEventListener('click', () => window.location.href = 'details_expenses.html');
+        document.getElementById('navToRename').addEventListener('click', () => window.location.href = 'settings_family.html');
+        document.getElementById('navToImport').addEventListener('click', () => window.location.href = 'import_data.html');
+        document.getElementById('navToFamilyAnalytics').addEventListener('click', () => window.location.href = 'details_expenses.html');
     });
 </script>
 </body>
